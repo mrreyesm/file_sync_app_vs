@@ -1,2 +1,4 @@
-# file_sync_app_vs
+# File Sync App
 File Sync App
+
+This is an Application to Sync Files and avoid duplicates.
