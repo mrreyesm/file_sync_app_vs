@@ -10,10 +10,10 @@
 // "int main" is implemented as below in wxWidgets
 wxIMPLEMENT_APP(App);
 
-// To create apps with WxWidgets wxApp class should be derived
+// To create apps with WxWidgets wxApp class should be derived.
 // and OnInit needs to be override
 App::App() {}
-// initializes the program 
+// initializes the program  test
 bool App::OnInit()
 {
     if (!wxApp::OnInit())
@@ -21,7 +21,7 @@ bool App::OnInit()
 
     //Creates an intance of the Main Window object and shows it
     MainWindow* main = new MainWindow(nullptr, window::id::MAINWINDOW, _("File Sync App"));
-    main->Show();
+    main->Show(); 
     return true;
 }
 
