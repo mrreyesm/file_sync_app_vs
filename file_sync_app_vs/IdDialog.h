@@ -8,6 +8,8 @@
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
 #endif
+#include <wx/textctrl.h>
+#include <wx/filepicker.h>
 
 class IdDialog : public wxDialog
 {
@@ -23,5 +25,10 @@ public:
     virtual ~IdDialog();
 
 private:
-    wxTextCtrl* idFileBox = nullptr;
+    void OnPathChanged(wxFileDirPickerEvent& event);
+
+    wxTextCtrl* m_textCtrl;
+    wxFilePickerCtrl* filePickerCtrl;
+    const int FilePickerID = 20;
+
 };

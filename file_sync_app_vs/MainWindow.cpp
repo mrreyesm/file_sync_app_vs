@@ -6,6 +6,8 @@
 #include "MainWindow.h"
 #include "IdDialog.h"
 #include <wx/artprov.h>
+#include <wx/listbox.h>
+
 
 //The Main window object is defined
 MainWindow::MainWindow(wxWindow* parent,
@@ -43,77 +45,126 @@ MainWindow::MainWindow(wxWindow* parent,
 
 
     // Create the layout with labels and boxes
-    wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
+    // parent panel
+    m_parent = new wxPanel(this, wxID_ANY);
+    // creates sizer to fit left and right panels
+    wxBoxSizer* hbox = new wxBoxSizer(wxHORIZONTAL);
+    // creates left and right panels and adds them to hbox
+    wxPanel *m_lp = new wxPanel(m_parent, -1, wxPoint(-1, -1), wxSize(-1, -1), wxBORDER_SUNKEN);
+    wxPanel *m_rp = new wxPanel(m_parent, wxID_ANY, wxDefaultPosition,wxSize(270, 150), wxBORDER_SUNKEN);
+    hbox->Add(m_lp, 1, wxEXPAND | wxALL, 5);
+    hbox->Add(m_rp, 1, wxEXPAND | wxALL, 5);
+    m_parent->SetSizer(hbox);
+    // creates vertical boxes for the left and the right panels and asigns them to those panels
+    wxBoxSizer* m_lpSizer = new wxBoxSizer(wxVERTICAL);
+    wxBoxSizer* m_rpSizer = new wxBoxSizer(wxVERTICAL);
+    m_lp->SetSizer(m_lpSizer);
+    m_rp->SetSizer(m_rpSizer);
 
-    wxPanel* panel = new wxPanel(this);
-    mainSizer->Add(panel, 1, wxEXPAND);
-    wxBoxSizer* panelmainSizer = new wxBoxSizer(wxVERTICAL);
-    panel->SetSizer(panelmainSizer);
-
+    //-----------------------------LEFT PANEL--------------------------------------------
     //Create Source file sizer, label and box
     wxBoxSizer* sourceSizer = new wxBoxSizer(wxHORIZONTAL);
     // Create source label
-    wxStaticText* sourceLabel = new wxStaticText(panel, wxID_ANY, _("Source"));
-    sourceSizer->Add(sourceLabel, 0, wxLEFT, 5);
+    wxStaticText* sourceLabel = new wxStaticText(m_lp, wxID_ANY, _("Source"));
+    sourceSizer->Add(sourceLabel, 0, wxLEFT, 10);
     sourceLabel->SetMinSize(wxSize(125, sourceLabel->GetMinSize().y));
-    // Create source box
-    sourceBox = new wxTextCtrl(panel, wxID_ANY);
-    sourceSizer->Add(sourceBox, 1);
-    panelmainSizer->Add(sourceSizer, 0, wxEXPAND | wxALL, 5);
-    // Add button to access files
-    wxButton* okButton = new wxButton(panel, wxID_OK, _("Add"));
-    sourceSizer->Add(okButton, 0, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, 5);
-    // Look at files inside the directory
-    sourceFileBox = new wxTextCtrl(panel, wxID_ANY);
-    sourceSizer->Add(sourceFileBox, 1);
+    //create listbox for the selected directories
+    m_lb = listbox = new wxListBox(m_lp, ID_LISTBOX, wxDefaultPosition, wxSize(250, 100));
+    sourceSizer->Add(listbox, 0, wxEXPAND | wxALL, 5);
+    // creats a vertical box panel to put the buttons
+    wxBoxSizer* vbox = new wxBoxSizer(wxVERTICAL);
+    m_newb = new wxButton(m_lp, wxID_NEW, wxT("Add"));
+    m_deleteb = new wxButton(m_lp, wxID_DELETE, wxT("Remove"));
+    m_clearb = new wxButton(m_lp, wxID_CLEAR, wxT("Clear"));
+    //assigns actions to those buttons
+    Connect(wxID_NEW, wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainWindow::OnNew));
+    Connect(wxID_CLEAR, wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainWindow::OnClear));
+    Connect(wxID_DELETE, wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainWindow::OnDelete));
+    // adds each button to the panel
+    vbox->Add(-1, 5);
+    vbox->Add(m_newb);
+    vbox->Add(m_deleteb, 0, wxTOP, 5);
+    vbox->Add(m_clearb, 0, wxTOP, 5);
+    // adds the button panel to the source sizer
+    sourceSizer->Add(vbox, 2, wxEXPAND | wxRIGHT, 10);
+    m_lpSizer->Add(-1, 10);
+    m_lpSizer->Add(sourceSizer, 0, wxEXPAND | wxALL, 5);
 
     // Create box for Master files
     wxBoxSizer* sourceMFileSizer = new wxBoxSizer(wxHORIZONTAL);
-    sourceMFileBox = new wxTextCtrl(panel, wxID_ANY);
-    sourceMFileSizer->Add(sourceMFileBox, 1);
-    panelmainSizer->Add(sourceMFileSizer, 0, wxEXPAND | wxALL, 5);
+    // Create master file label
+    wxStaticText* sourceMFileLabel = new wxStaticText(m_lp, wxID_ANY, _("Master Files"));
+    sourceMFileSizer->Add(sourceMFileLabel, 0, wxLEFT, 10);
+    sourceMFileLabel->SetMinSize(wxSize(125, sourceMFileLabel->GetMinSize().y));
+    // Create Maste files list box
+    wxListBox* sourceMFileBox = new wxListBox(m_lp, ID_LISTBOX2, wxDefaultPosition, wxSize(250, 100));
+    sourceMFileSizer->Add(sourceMFileBox, 0, wxEXPAND | wxALL, 5);
+    m_lpSizer->Add(sourceMFileSizer, 0, wxEXPAND | wxALL, 5);
 
 
+    // Create box for Master duplicates files
+    wxBoxSizer* sourceMDFileSizer = new wxBoxSizer(wxHORIZONTAL);
+    // Create master file label
+    wxStaticText* sourceMDFileLabel = new wxStaticText(m_lp, wxID_ANY, _("Master Files\nDuplicates"));
+    sourceMDFileSizer->Add(sourceMDFileLabel, 0, wxLEFT, 10);
+    sourceMDFileLabel->SetMinSize(wxSize(125, sourceMDFileLabel->GetMinSize().y));
+    // Create Maste files list box
+    wxListBox* sourceMDFileBox = new wxListBox(m_lp, ID_LISTBOX3, wxDefaultPosition, wxSize(250, 100));
+    sourceMDFileSizer->Add(sourceMDFileBox, 0, wxEXPAND | wxALL, 5);
+    m_lpSizer->Add(sourceMDFileSizer, 0, wxEXPAND | wxALL, 5);
+
+
+
+    //---------------------------------RIGHT PANEL------------------------------------------
+    //Create target file sizer, label and box
     wxBoxSizer* targetSizer = new wxBoxSizer(wxHORIZONTAL);
-    // Create target label
-    wxStaticText* targetLabel = new wxStaticText(panel, wxID_ANY, _("Target"));
-    targetSizer->Add(targetLabel, 0, wxLEFT, 5);
+    // Create source label
+    wxStaticText* targetLabel = new wxStaticText(m_rp, wxID_ANY, _("Target"));
+    targetSizer->Add(targetLabel, 0, wxLEFT, 10);
     targetLabel->SetMinSize(wxSize(125, targetLabel->GetMinSize().y));
-    // Create target box
-    targetBox = new wxTextCtrl(panel, wxID_ANY);
-    targetSizer->Add(targetBox, 1);
-    panelmainSizer->Add(targetSizer, 0, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, 5);
-    // Add button to access files
-    wxButton* cancelButton = new wxButton(panel, wxID_CANCEL, _("Add"));
-    targetSizer->Add(cancelButton, 0, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, 5);
-    // Look at files inside the directory
-    targetFileBox = new wxTextCtrl(panel, wxID_ANY);
-    targetSizer->Add(targetFileBox, 1);
+    //create listbox for the selected directories
+    m_lb2 = listbox2 = new wxListBox(m_rp, ID_LISTBOX4, wxDefaultPosition, wxSize(250, 100));
+    targetSizer->Add(listbox2, 0, wxEXPAND | wxALL, 5);
+    // creats a vertical box panel to put the buttons
+    wxBoxSizer* vbox2 = new wxBoxSizer(wxVERTICAL);
+    m_newb2 = new wxButton(m_rp, wxID_NEW+1, wxT("Add"));
+    m_deleteb2 = new wxButton(m_rp, wxID_DELETE+1, wxT("Remove"));
+    m_clearb2 = new wxButton(m_rp, wxID_CLEAR+1, wxT("Clear"));
+    //assigns actions to those buttons
+    Connect(wxID_NEW+1, wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainWindow::OnNew2));
+    Connect(wxID_CLEAR+1, wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainWindow::OnClear2));
+    Connect(wxID_DELETE+1, wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainWindow::OnDelete2));
+    // adds each button to the panel
+    vbox2->Add(-1, 5);
+    vbox2->Add(m_newb2);
+    vbox2->Add(m_deleteb2, 0, wxTOP, 5);
+    vbox2->Add(m_clearb2, 0, wxTOP, 5);
+    // adds the button panel to the source sizer
+    targetSizer->Add(vbox2, 2, wxEXPAND | wxRIGHT, 10);
+    m_rpSizer->Add(-1, 10);
+    m_rpSizer->Add(targetSizer, 0, wxEXPAND | wxALL, 5);
 
-    // Create box for Client files
+    // Create box for Master files
     wxBoxSizer* targetCFileSizer = new wxBoxSizer(wxHORIZONTAL);
-    targetCFileBox = new wxTextCtrl(panel, wxID_ANY);
-    targetCFileSizer->Add(targetCFileBox, 1);
-    panelmainSizer->Add(targetCFileSizer, 0, wxEXPAND | wxALL, 5);
+    // Create master file label
+    wxStaticText* targetCFileLabel = new wxStaticText(m_rp, wxID_ANY, _("Client Files"));
+    targetCFileSizer->Add(targetCFileLabel, 0, wxLEFT, 10);
+    targetCFileLabel->SetMinSize(wxSize(125, targetCFileLabel->GetMinSize().y));
+    // Create Maste files list box
+    wxListBox* targetCFileBox = new wxListBox(m_rp, ID_LISTBOX5, wxDefaultPosition, wxSize(250, 100));
+    targetCFileSizer->Add(targetCFileBox, 0, wxEXPAND | wxALL, 5);
+    m_rpSizer->Add(targetCFileSizer, 0, wxEXPAND | wxALL, 5);
 
-    // Create button to sync 
-    wxBoxSizer* syncSizer = new wxBoxSizer(wxHORIZONTAL);
-    wxButton* syncButton = new wxButton(panel, wxID_ANY, _("Search"));
-    syncSizer->Add(syncButton, 1);
-    panelmainSizer->Add(syncSizer, 0, wxEXPAND | wxALL, 5);
-
-
-
+    //-----------------------------------------------------------------------------------------
     //Creates Status bar that can be updated in different steps
     CreateStatusBar();
     SetStatusText(_("Syncing!"));
 
-    SetMinSize(wxSize(500, 250));
+    SetMinSize(wxSize(1020, 500));
 }
 
 void MainWindow::onIdFile(wxCommandEvent& WXUNUSED(event))
 {
-    //IdDialog dlg(this, wxID_ANY, _("Address"));
     if (idDialog == nullptr)
     {
         idDialog = new IdDialog(this, wxID_ANY, _("ID File"));
@@ -127,4 +178,44 @@ void MainWindow::OnAbout(wxCommandEvent& event)
         "About File Sync", wxOK | wxICON_INFORMATION);
 }
 
+void MainWindow::OnNew(wxCommandEvent& event)
+{
+    wxString str = wxGetTextFromUser(wxT("Add Directories"));
+    if (str.Len() > 0)
+        m_lb->Append(str);
+
+}
+
+void MainWindow::OnClear(wxCommandEvent& event)
+{
+    m_lb->Clear();
+}
+
+void MainWindow::OnDelete(wxCommandEvent& event)
+{
+    int sel = m_lb->GetSelection();
+    if (sel != -1) {
+        m_lb->Delete(sel);
+    }
+}
+
+void MainWindow::OnNew2(wxCommandEvent& event)
+{
+    wxString str = wxGetTextFromUser(wxT("Add Directories"));
+    if (str.Len() > 0)
+        m_lb2->Append(str);
+}
+
+void MainWindow::OnClear2(wxCommandEvent& event)
+{
+    m_lb2->Clear();
+}
+
+void MainWindow::OnDelete2(wxCommandEvent& event)
+{
+    int sel = m_lb2->GetSelection();
+    if (sel != -1) {
+        m_lb2->Delete(sel);
+    }
+}
 MainWindow::~MainWindow() {}

@@ -30,12 +30,34 @@ private:
     void onIdFile(wxCommandEvent& event);
     void OnAbout(wxCommandEvent& event);
 
-    wxTextCtrl* sourceBox = nullptr;
-    wxTextCtrl* targetBox = nullptr;
-    wxTextCtrl* sourceFileBox = nullptr;
-    wxTextCtrl* sourceMFileBox = nullptr;
-    wxTextCtrl* targetFileBox = nullptr;
-    wxTextCtrl* targetCFileBox = nullptr;
+    void OnNew(wxCommandEvent& event);
+    void OnClear(wxCommandEvent& event);
+    void OnDelete(wxCommandEvent& event);
+
+    void OnNew2(wxCommandEvent& event);
+    void OnClear2(wxCommandEvent& event);
+    void OnDelete2(wxCommandEvent& event);
+
+    wxListBox* m_lb;
+    wxListBox* m_lb2;
+    wxListBox* listbox;
+    wxListBox* listbox2;
+    wxPanel* m_parent;
+
+    wxButton* m_newb;
+    wxButton* m_clearb;
+    wxButton* m_deleteb;
+
+    wxButton* m_newb2;
+    wxButton* m_clearb2;
+    wxButton* m_deleteb2;
+
     //Data Members
+    const int ID_LISTBOX  = 5;
+    const int ID_LISTBOX2 = 6;
+    const int ID_LISTBOX3 = 7;
+    const int ID_LISTBOX4 = 8;
+    const int ID_LISTBOX5 = 9;
+    const int DirPickerID = 10;
 
 };

@@ -6,6 +6,7 @@
 #include "IdDialog.h"
 #include <wx/valgen.h>
 #include <wx/valtext.h>
+#include <wx/filepicker.h>
 
 IdDialog::IdDialog(wxWindow* parent, wxWindowID id,
     const wxString& title,
@@ -19,27 +20,39 @@ IdDialog::IdDialog(wxWindow* parent, wxWindowID id,
 
     //Create idFile field
     wxBoxSizer* idFileSizer = new wxBoxSizer(wxHORIZONTAL);
+
     //Create idFile lable
     wxStaticText* idFileLable = new wxStaticText(this, wxID_ANY, _("File"));
     idFileLable->SetMinSize(wxSize(50, idFileLable->GetMinSize().y));
-    idFileSizer->Add(idFileLable);
+    idFileSizer->Add(idFileLable, 0, wxALL, 5);
+
+    // Create a wxFilePickerCtrl control
+    filePickerCtrl = new wxFilePickerCtrl(this,FilePickerID,wxEmptyString,
+        wxFileSelectorPromptStr, wxFileSelectorDefaultWildcardStr, wxDefaultPosition, wxSize(500, wxDefaultCoord));
+    idFileSizer->Add(filePickerCtrl, 0, wxEXPAND | wxALL, 5);
+    //Bind(EVT_FILEPICKER_CHANGED, &IdDialog::OnPathChanged, this, filePickerCtrl->GetId());
+
     // Create box for the File that is going to be modified
-    idFileBox = new wxTextCtrl(this, wxID_ANY);
-    wxTextValidator idFileValidator(wxFILTER_ALPHANUMERIC);
-    idFileBox->SetValidator(idFileValidator);
-    idFileSizer->Add(idFileBox, 1);
-    // Add button to select file
-    wxButton* addButton = new wxButton(this, wxID_OK, _("Add"));
-    idFileSizer->Add(addButton, 0, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, 5);
+    m_textCtrl = new wxTextCtrl(this, wxID_ANY);
+    idFileSizer->Add(m_textCtrl, 1, wxEXPAND | wxALL, 5);
+
     // Add button to create ID
-    wxButton* idButton = new wxButton(this, wxID_OK, _("Create ID"));
-    idFileSizer->Add(idButton, 0, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, 5);
+    wxButton* idButton = new wxButton(this, wxID_CANCEL, _("Create ID"));
+    idFileSizer->Add(idButton, 0, wxALL, 5);
 
     mainSizer->Add(idFileSizer, 0, wxEXPAND | wxALL, 5);
 
     SetSizer(mainSizer);
-    SetMinSize(wxSize(400, 100)); //min size of the dialog
+    SetMinSize(wxSize(1000, 100)); //min size of the dialog
     Fit();
+}
+
+void IdDialog::OnPathChanged(wxFileDirPickerEvent& event)
+{
+    if (m_textCtrl)
+    {
+        m_textCtrl->SetValue(event.GetPath());
+    }
 }
 
 IdDialog::~IdDialog() {}
