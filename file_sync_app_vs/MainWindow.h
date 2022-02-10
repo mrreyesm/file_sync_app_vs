@@ -33,10 +33,12 @@ private:
     void OnNew(wxCommandEvent& event);
     void OnClear(wxCommandEvent& event);
     void OnDelete(wxCommandEvent& event);
+    void OnSearch(wxCommandEvent& event);
 
     void OnNew2(wxCommandEvent& event);
     void OnClear2(wxCommandEvent& event);
     void OnDelete2(wxCommandEvent& event);
+    void OnSearch2(wxCommandEvent& event);
 
     wxListBox* m_lb;
     wxListBox* m_lb2;
@@ -47,10 +49,12 @@ private:
     wxButton* m_newb;
     wxButton* m_clearb;
     wxButton* m_deleteb;
+    wxButton* m_searchb;
 
     wxButton* m_newb2;
     wxButton* m_clearb2;
     wxButton* m_deleteb2;
+    wxButton* m_searchb2;
 
     //Data Members
     const int ID_LISTBOX  = 5;
@@ -59,5 +63,6 @@ private:
     const int ID_LISTBOX4 = 8;
     const int ID_LISTBOX5 = 9;
     const int DirPickerID = 10;
-
+    const int ID_SEARCH = 11;
+    const int ID_SEARCH2 = 11;
 };

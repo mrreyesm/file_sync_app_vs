@@ -76,15 +76,18 @@ MainWindow::MainWindow(wxWindow* parent,
     m_newb = new wxButton(m_lp, wxID_NEW, wxT("Add"));
     m_deleteb = new wxButton(m_lp, wxID_DELETE, wxT("Remove"));
     m_clearb = new wxButton(m_lp, wxID_CLEAR, wxT("Clear"));
+    m_searchb = new wxButton(m_lp, ID_SEARCH, wxT("Search"));
     //assigns actions to those buttons
     Connect(wxID_NEW, wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainWindow::OnNew));
     Connect(wxID_CLEAR, wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainWindow::OnClear));
     Connect(wxID_DELETE, wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainWindow::OnDelete));
+    Connect(ID_SEARCH, wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainWindow::OnSearch));
     // adds each button to the panel
     vbox->Add(-1, 5);
     vbox->Add(m_newb);
     vbox->Add(m_deleteb, 0, wxTOP, 5);
     vbox->Add(m_clearb, 0, wxTOP, 5);
+    vbox->Add(m_searchb, 0, wxTOP, 5);
     // adds the button panel to the source sizer
     sourceSizer->Add(vbox, 2, wxEXPAND | wxRIGHT, 10);
     m_lpSizer->Add(-1, 10);
@@ -130,15 +133,18 @@ MainWindow::MainWindow(wxWindow* parent,
     m_newb2 = new wxButton(m_rp, wxID_NEW+1, wxT("Add"));
     m_deleteb2 = new wxButton(m_rp, wxID_DELETE+1, wxT("Remove"));
     m_clearb2 = new wxButton(m_rp, wxID_CLEAR+1, wxT("Clear"));
+    m_searchb2 = new wxButton(m_rp, ID_SEARCH2, wxT("Search"));
     //assigns actions to those buttons
     Connect(wxID_NEW+1, wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainWindow::OnNew2));
     Connect(wxID_CLEAR+1, wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainWindow::OnClear2));
     Connect(wxID_DELETE+1, wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainWindow::OnDelete2));
+    Connect(ID_SEARCH2, wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainWindow::OnSearch2));
     // adds each button to the panel
     vbox2->Add(-1, 5);
     vbox2->Add(m_newb2);
     vbox2->Add(m_deleteb2, 0, wxTOP, 5);
     vbox2->Add(m_clearb2, 0, wxTOP, 5);
+    vbox2->Add(m_searchb2, 0, wxTOP, 5);
     // adds the button panel to the source sizer
     targetSizer->Add(vbox2, 2, wxEXPAND | wxRIGHT, 10);
     m_rpSizer->Add(-1, 10);
@@ -199,6 +205,11 @@ void MainWindow::OnDelete(wxCommandEvent& event)
     }
 }
 
+void MainWindow::OnSearch(wxCommandEvent& event)
+{
+    wxMessageBox("Button under development");
+}
+
 void MainWindow::OnNew2(wxCommandEvent& event)
 {
     wxString str = wxGetTextFromUser(wxT("Add Directories"));
@@ -218,4 +229,10 @@ void MainWindow::OnDelete2(wxCommandEvent& event)
         m_lb2->Delete(sel);
     }
 }
+
+void MainWindow::OnSearch2(wxCommandEvent& event)
+{
+    wxMessageBox("Button under development");
+}
+
 MainWindow::~MainWindow() {}
