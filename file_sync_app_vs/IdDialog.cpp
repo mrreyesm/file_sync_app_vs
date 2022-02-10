@@ -48,7 +48,7 @@ IdDialog::IdDialog(wxWindow* parent, wxWindowID id,
     mainSizer->Add(idFileSizer, 0, wxEXPAND | wxALL, 5);
 
     SetSizer(mainSizer);
-    SetMinSize(wxSize(1000, 100)); //min size of the dialog
+    SetMinSize(wxSize(1020, 100)); //min size of the dialog
     Fit();
 }
 
