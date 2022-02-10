@@ -25,10 +25,14 @@ public:
     virtual ~IdDialog();
 
 private:
-    void OnPathChanged(wxFileDirPickerEvent& event);
+    void OnIdFile(wxCommandEvent& event);
+    void OnSelectFile(wxCommandEvent& event);
+    wxTextCtrl* f_textCtrl;
+    wxTextCtrl* fid_textCtrl;
 
-    wxTextCtrl* m_textCtrl;
-    wxFilePickerCtrl* filePickerCtrl;
-    const int FilePickerID = 20;
+    wxButton* d_addb;
+    wxButton* d_idb;
 
+    const int FileID = 20;
+    const int AddID = 21;
 };

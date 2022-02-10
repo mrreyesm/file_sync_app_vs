@@ -67,9 +67,9 @@ MainWindow::MainWindow(wxWindow* parent,
     // Create source label
     wxStaticText* sourceLabel = new wxStaticText(m_lp, wxID_ANY, _("Source"));
     sourceSizer->Add(sourceLabel, 0, wxLEFT, 10);
-    sourceLabel->SetMinSize(wxSize(125, sourceLabel->GetMinSize().y));
+    sourceLabel->SetMinSize(wxSize(50, sourceLabel->GetMinSize().y));
     //create listbox for the selected directories
-    m_lb = listbox = new wxListBox(m_lp, ID_LISTBOX, wxDefaultPosition, wxSize(250, 100));
+    m_lb = listbox = new wxListBox(m_lp, ID_LISTBOX, wxDefaultPosition, wxSize(325, 110));
     sourceSizer->Add(listbox, 0, wxEXPAND | wxALL, 5);
     // creats a vertical box panel to put the buttons
     wxBoxSizer* vbox = new wxBoxSizer(wxVERTICAL);
@@ -98,9 +98,9 @@ MainWindow::MainWindow(wxWindow* parent,
     // Create master file label
     wxStaticText* sourceMFileLabel = new wxStaticText(m_lp, wxID_ANY, _("Master Files"));
     sourceMFileSizer->Add(sourceMFileLabel, 0, wxLEFT, 10);
-    sourceMFileLabel->SetMinSize(wxSize(125, sourceMFileLabel->GetMinSize().y));
+    sourceMFileLabel->SetMinSize(wxSize(50, sourceMFileLabel->GetMinSize().y));
     // Create Maste files list box
-    wxListBox* sourceMFileBox = new wxListBox(m_lp, ID_LISTBOX2, wxDefaultPosition, wxSize(250, 100));
+    wxListBox* sourceMFileBox = new wxListBox(m_lp, ID_LISTBOX2, wxDefaultPosition, wxSize(325, 100));
     sourceMFileSizer->Add(sourceMFileBox, 0, wxEXPAND | wxALL, 5);
     m_lpSizer->Add(sourceMFileSizer, 0, wxEXPAND | wxALL, 5);
 
@@ -110,9 +110,9 @@ MainWindow::MainWindow(wxWindow* parent,
     // Create master file label
     wxStaticText* sourceMDFileLabel = new wxStaticText(m_lp, wxID_ANY, _("Master Files\nDuplicates"));
     sourceMDFileSizer->Add(sourceMDFileLabel, 0, wxLEFT, 10);
-    sourceMDFileLabel->SetMinSize(wxSize(125, sourceMDFileLabel->GetMinSize().y));
+    sourceMDFileLabel->SetMinSize(wxSize(50, sourceMDFileLabel->GetMinSize().y));
     // Create Maste files list box
-    wxListBox* sourceMDFileBox = new wxListBox(m_lp, ID_LISTBOX3, wxDefaultPosition, wxSize(250, 100));
+    wxListBox* sourceMDFileBox = new wxListBox(m_lp, ID_LISTBOX3, wxDefaultPosition, wxSize(325, 100));
     sourceMDFileSizer->Add(sourceMDFileBox, 0, wxEXPAND | wxALL, 5);
     m_lpSizer->Add(sourceMDFileSizer, 0, wxEXPAND | wxALL, 5);
 
@@ -124,9 +124,9 @@ MainWindow::MainWindow(wxWindow* parent,
     // Create source label
     wxStaticText* targetLabel = new wxStaticText(m_rp, wxID_ANY, _("Target"));
     targetSizer->Add(targetLabel, 0, wxLEFT, 10);
-    targetLabel->SetMinSize(wxSize(125, targetLabel->GetMinSize().y));
+    targetLabel->SetMinSize(wxSize(50, targetLabel->GetMinSize().y));
     //create listbox for the selected directories
-    m_lb2 = listbox2 = new wxListBox(m_rp, ID_LISTBOX4, wxDefaultPosition, wxSize(250, 100));
+    m_lb2 = listbox2 = new wxListBox(m_rp, ID_LISTBOX4, wxDefaultPosition, wxSize(325, 110));
     targetSizer->Add(listbox2, 0, wxEXPAND | wxALL, 5);
     // creats a vertical box panel to put the buttons
     wxBoxSizer* vbox2 = new wxBoxSizer(wxVERTICAL);
@@ -155,9 +155,9 @@ MainWindow::MainWindow(wxWindow* parent,
     // Create master file label
     wxStaticText* targetCFileLabel = new wxStaticText(m_rp, wxID_ANY, _("Client Files"));
     targetCFileSizer->Add(targetCFileLabel, 0, wxLEFT, 10);
-    targetCFileLabel->SetMinSize(wxSize(125, targetCFileLabel->GetMinSize().y));
+    targetCFileLabel->SetMinSize(wxSize(50, targetCFileLabel->GetMinSize().y));
     // Create Maste files list box
-    wxListBox* targetCFileBox = new wxListBox(m_rp, ID_LISTBOX5, wxDefaultPosition, wxSize(250, 100));
+    wxListBox* targetCFileBox = new wxListBox(m_rp, ID_LISTBOX5, wxDefaultPosition, wxSize(325, 100));
     targetCFileSizer->Add(targetCFileBox, 0, wxEXPAND | wxALL, 5);
     m_rpSizer->Add(targetCFileSizer, 0, wxEXPAND | wxALL, 5);
 
@@ -186,10 +186,11 @@ void MainWindow::OnAbout(wxCommandEvent& event)
 
 void MainWindow::OnNew(wxCommandEvent& event)
 {
-    wxString str = wxGetTextFromUser(wxT("Add Directories"));
-    if (str.Len() > 0)
-        m_lb->Append(str);
-
+    wxDirDialog* openDirDialog = new wxDirDialog(this, "Choose Master directories");
+    if (openDirDialog->ShowModal() == wxID_OK) {
+        wxString DirName = openDirDialog->GetPath();
+        m_lb->Append(DirName);
+    }
 }
 
 void MainWindow::OnClear(wxCommandEvent& event)
@@ -212,9 +213,11 @@ void MainWindow::OnSearch(wxCommandEvent& event)
 
 void MainWindow::OnNew2(wxCommandEvent& event)
 {
-    wxString str = wxGetTextFromUser(wxT("Add Directories"));
-    if (str.Len() > 0)
-        m_lb2->Append(str);
+    wxDirDialog* openDirDialog = new wxDirDialog(this, "Choose Client directories");
+    if (openDirDialog->ShowModal() == wxID_OK) {
+        wxString DirName = openDirDialog->GetPath();
+        m_lb2->Append(DirName);
+    }
 }
 
 void MainWindow::OnClear2(wxCommandEvent& event)
