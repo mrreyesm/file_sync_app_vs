@@ -9,8 +9,6 @@
 #include <wx/wx.h>
 #endif
 
-class IdDialog;
-
 class MainWindow : public wxFrame
 {
 public:
@@ -25,7 +23,6 @@ public:
     // Deconstructor           
     ~MainWindow();
 private:
-    IdDialog* idDialog = nullptr;
     // Event handlers
     void onIdFile(wxCommandEvent& event);
     void OnAbout(wxCommandEvent& event);

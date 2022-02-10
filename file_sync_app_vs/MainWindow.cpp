@@ -171,11 +171,8 @@ MainWindow::MainWindow(wxWindow* parent,
 
 void MainWindow::onIdFile(wxCommandEvent& WXUNUSED(event))
 {
-    if (idDialog == nullptr)
-    {
-        idDialog = new IdDialog(this, wxID_ANY, _("ID File"));
+        IdDialog *idDialog = new IdDialog(this, wxID_ANY, _("ID File"));
         idDialog->Show();
-    }
 }
 
 void MainWindow::OnAbout(wxCommandEvent& event)
