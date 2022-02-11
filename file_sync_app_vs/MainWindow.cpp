@@ -67,9 +67,9 @@ MainWindow::MainWindow(wxWindow* parent,
     // Create source label
     wxStaticText* sourceLabel = new wxStaticText(m_lp, wxID_ANY, _("Source"));
     sourceSizer->Add(sourceLabel, 0, wxLEFT, 10);
-    sourceLabel->SetMinSize(wxSize(50, sourceLabel->GetMinSize().y));
+    sourceLabel->SetMinSize(wxSize(70, sourceLabel->GetMinSize().y));
     //create listbox for the selected directories
-    m_lb = listbox = new wxListBox(m_lp, ID_LISTBOX, wxDefaultPosition, wxSize(325, 110));
+    m_lb = listbox = new wxListBox(m_lp, ID_LISTBOX, wxDefaultPosition, wxSize(305, 110));
     sourceSizer->Add(listbox, 0, wxEXPAND | wxALL, 5);
     // creats a vertical box panel to put the buttons
     wxBoxSizer* vbox = new wxBoxSizer(wxVERTICAL);
@@ -98,9 +98,9 @@ MainWindow::MainWindow(wxWindow* parent,
     // Create master file label
     wxStaticText* sourceMFileLabel = new wxStaticText(m_lp, wxID_ANY, _("Master Files"));
     sourceMFileSizer->Add(sourceMFileLabel, 0, wxLEFT, 10);
-    sourceMFileLabel->SetMinSize(wxSize(50, sourceMFileLabel->GetMinSize().y));
+    sourceMFileLabel->SetMinSize(wxSize(70, sourceMFileLabel->GetMinSize().y));
     // Create Maste files list box
-    wxListBox* sourceMFileBox = new wxListBox(m_lp, ID_LISTBOX2, wxDefaultPosition, wxSize(325, 100));
+    wxListBox* sourceMFileBox = new wxListBox(m_lp, ID_LISTBOX2, wxDefaultPosition, wxSize(305, 100));
     sourceMFileSizer->Add(sourceMFileBox, 0, wxEXPAND | wxALL, 5);
     m_lpSizer->Add(sourceMFileSizer, 0, wxEXPAND | wxALL, 5);
 
@@ -110,9 +110,9 @@ MainWindow::MainWindow(wxWindow* parent,
     // Create master file label
     wxStaticText* sourceMDFileLabel = new wxStaticText(m_lp, wxID_ANY, _("Master Files\nDuplicates"));
     sourceMDFileSizer->Add(sourceMDFileLabel, 0, wxLEFT, 10);
-    sourceMDFileLabel->SetMinSize(wxSize(50, sourceMDFileLabel->GetMinSize().y));
+    sourceMDFileLabel->SetMinSize(wxSize(70, sourceMDFileLabel->GetMinSize().y));
     // Create Maste files list box
-    wxListBox* sourceMDFileBox = new wxListBox(m_lp, ID_LISTBOX3, wxDefaultPosition, wxSize(325, 100));
+    wxListBox* sourceMDFileBox = new wxListBox(m_lp, ID_LISTBOX3, wxDefaultPosition, wxSize(305, 100));
     sourceMDFileSizer->Add(sourceMDFileBox, 0, wxEXPAND | wxALL, 5);
     m_lpSizer->Add(sourceMDFileSizer, 0, wxEXPAND | wxALL, 5);
 
