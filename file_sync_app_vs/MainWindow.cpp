@@ -7,6 +7,7 @@
 #include "IdDialog.h"
 #include <wx/artprov.h>
 #include <wx/listbox.h>
+#include <wx/dir.h>
 
 
 //The Main window object is defined
@@ -100,7 +101,7 @@ MainWindow::MainWindow(wxWindow* parent,
     sourceMFileSizer->Add(sourceMFileLabel, 0, wxLEFT, 10);
     sourceMFileLabel->SetMinSize(wxSize(70, sourceMFileLabel->GetMinSize().y));
     // Create Maste files list box
-    wxListBox* sourceMFileBox = new wxListBox(m_lp, ID_LISTBOX2, wxDefaultPosition, wxSize(305, 100));
+    m_lb3 = sourceMFileBox = new wxListBox(m_lp, ID_LISTBOX2, wxDefaultPosition, wxSize(305, 100));
     sourceMFileSizer->Add(sourceMFileBox, 0, wxEXPAND | wxALL, 5);
     m_lpSizer->Add(sourceMFileSizer, 0, wxEXPAND | wxALL, 5);
 
@@ -157,7 +158,7 @@ MainWindow::MainWindow(wxWindow* parent,
     targetCFileSizer->Add(targetCFileLabel, 0, wxLEFT, 10);
     targetCFileLabel->SetMinSize(wxSize(50, targetCFileLabel->GetMinSize().y));
     // Create Maste files list box
-    wxListBox* targetCFileBox = new wxListBox(m_rp, ID_LISTBOX5, wxDefaultPosition, wxSize(325, 100));
+    m_lb4 = targetCFileBox = new wxListBox(m_rp, ID_LISTBOX5, wxDefaultPosition, wxSize(325, 100));
     targetCFileSizer->Add(targetCFileBox, 0, wxEXPAND | wxALL, 5);
     m_rpSizer->Add(targetCFileSizer, 0, wxEXPAND | wxALL, 5);
 
@@ -205,7 +206,18 @@ void MainWindow::OnDelete(wxCommandEvent& event)
 
 void MainWindow::OnSearch(wxCommandEvent& event)
 {
-    wxMessageBox("Button under development");
+    //wxMessageBox("Button under development");
+    
+    int sel = 0;
+    wxString pathtmp = m_lb->GetString(sel);
+    std::string s = std::string(pathtmp.mb_str());
+
+    wxDir dir(s);
+    wxString dirName = dir.GetName();
+    wxArrayString dirList;
+    dir.GetAllFiles(dirName, &dirList, wxEmptyString, wxDIR_FILES);
+    m_lb3->Append(dirList);
+    
 }
 
 void MainWindow::OnNew2(wxCommandEvent& event)
@@ -232,7 +244,15 @@ void MainWindow::OnDelete2(wxCommandEvent& event)
 
 void MainWindow::OnSearch2(wxCommandEvent& event)
 {
-    wxMessageBox("Button under development");
+    int sel2 = 0;
+    wxString pathtmp2 = m_lb2->GetString(sel2);
+    std::string s2 = std::string(pathtmp2.mb_str());
+
+    wxDir dir2(s2);
+    wxString dirName2 = dir2.GetName();
+    wxArrayString dirList2;
+    dir2.GetAllFiles(dirName2, &dirList2, wxEmptyString, wxDIR_FILES);
+    m_lb4->Append(dirList2);
 }
 
 MainWindow::~MainWindow() {}

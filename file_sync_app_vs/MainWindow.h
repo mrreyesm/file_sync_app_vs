@@ -41,6 +41,10 @@ private:
     wxListBox* m_lb2;
     wxListBox* listbox;
     wxListBox* listbox2;
+    wxListBox* sourceMFileBox;
+    wxListBox* m_lb3;
+    wxListBox* targetCFileBox;
+    wxListBox* m_lb4;
     wxPanel* m_parent;
 
     wxButton* m_newb;
@@ -61,5 +65,5 @@ private:
     const int ID_LISTBOX5 = 9;
     const int DirPickerID = 10;
     const int ID_SEARCH = 11;
-    const int ID_SEARCH2 = 11;
+    const int ID_SEARCH2 = 12;
 };
