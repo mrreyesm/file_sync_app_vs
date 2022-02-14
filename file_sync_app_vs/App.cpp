@@ -19,7 +19,7 @@ bool App::OnInit()
     if (!wxApp::OnInit())
         return false;
 
-    //Creates an intance of the Main Window object and shows it
+    //Creates an instance of the Main Window object and shows it
     MainWindow* main = new MainWindow(nullptr, window::id::MAINWINDOW, _("File Sync App"));
     main->Show(); 
     return true;
