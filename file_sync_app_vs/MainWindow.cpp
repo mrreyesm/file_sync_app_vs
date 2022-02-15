@@ -206,18 +206,20 @@ void MainWindow::OnDelete(wxCommandEvent& event)
 
 void MainWindow::OnSearch(wxCommandEvent& event)
 {
-    //wxMessageBox("Button under development");
-    
-    int sel = 0;
-    wxString pathtmp = m_lb->GetString(sel);
+    m_lb3->Clear();
+    int seldirs = 0;
+    int max = m_lb3->GetCount();
+    for (seldirs ; seldirs <= max+1; seldirs ++)
+    { 
+    wxString pathtmp = m_lb->GetString(seldirs);
     std::string s = std::string(pathtmp.mb_str());
 
     wxDir dir(s);
     wxString dirName = dir.GetName();
     wxArrayString dirList;
-    dir.GetAllFiles(dirName, &dirList, wxEmptyString, wxDIR_FILES);
+    dir.GetAllFiles(dirName, &dirList, wxEmptyString, wxDIR_FILES | wxDIR_DIRS);
     m_lb3->Append(dirList);
-    
+    }
 }
 
 void MainWindow::OnNew2(wxCommandEvent& event)
@@ -244,15 +246,20 @@ void MainWindow::OnDelete2(wxCommandEvent& event)
 
 void MainWindow::OnSearch2(wxCommandEvent& event)
 {
-    int sel2 = 0;
-    wxString pathtmp2 = m_lb2->GetString(sel2);
-    std::string s2 = std::string(pathtmp2.mb_str());
+    m_lb4->Clear();
+    int seldirs = 0;
+    int max = m_lb4->GetCount();
+    for (seldirs; seldirs <= max + 1; seldirs++)
+    {
+        wxString pathtmp = m_lb2->GetString(seldirs);
+        std::string s = std::string(pathtmp.mb_str());
 
-    wxDir dir2(s2);
-    wxString dirName2 = dir2.GetName();
-    wxArrayString dirList2;
-    dir2.GetAllFiles(dirName2, &dirList2, wxEmptyString, wxDIR_FILES);
-    m_lb4->Append(dirList2);
+        wxDir dir(s);
+        wxString dirName = dir.GetName();
+        wxArrayString dirList;
+        dir.GetAllFiles(dirName, &dirList, wxEmptyString, wxDIR_FILES | wxDIR_DIRS);
+        m_lb4->Append(dirList);
+    }
 }
 
 MainWindow::~MainWindow() {}
