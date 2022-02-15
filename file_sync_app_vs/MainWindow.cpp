@@ -8,7 +8,7 @@
 #include <wx/artprov.h>
 #include <wx/listbox.h>
 #include <wx/dir.h>
-
+#include <wx/regex.h>
 
 //The Main window object is defined
 MainWindow::MainWindow(wxWindow* parent,
@@ -218,6 +218,22 @@ void MainWindow::OnSearch(wxCommandEvent& event)
     wxString dirName = dir.GetName();
     wxArrayString dirList;
     dir.GetAllFiles(dirName, &dirList, wxEmptyString, wxDIR_FILES | wxDIR_DIRS);
+    int arraylength = dirList.GetCount();
+    wxArrayString filteredDirList;
+    wxRegEx re("tes");
+/*
+if (re.Matches(string)
+
+        for (int i = 0; i <= arraylength; i++)
+        {
+            if (re.Matches(dirList.Item(i)))
+            {
+                wxString temp;
+                temp = dirList.Item(i);
+                dirList = filteredDirList.Add(temp);
+            }
+        }
+*/
     m_lb3->Append(dirList);
     }
 }
