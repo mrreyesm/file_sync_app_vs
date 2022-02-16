@@ -45,6 +45,8 @@ private:
     wxListBox* m_lb3;
     wxListBox* targetCFileBox;
     wxListBox* m_lb4;
+    wxListBox* sourceMDFileBox;
+    wxListBox* m_lb5;
     wxPanel* m_parent;
 
     wxButton* m_newb;

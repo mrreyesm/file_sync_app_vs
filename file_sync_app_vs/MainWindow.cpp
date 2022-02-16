@@ -10,6 +10,10 @@
 #include <wx/dir.h>
 #include <wx/regex.h>
 
+// temp solution, to getting number of items from listbox
+int num_of_mdirs = 0;
+int num_of_cdirs = 0;
+
 //The Main window object is defined
 MainWindow::MainWindow(wxWindow* parent,
     wxWindowID id,
@@ -113,7 +117,7 @@ MainWindow::MainWindow(wxWindow* parent,
     sourceMDFileSizer->Add(sourceMDFileLabel, 0, wxLEFT, 10);
     sourceMDFileLabel->SetMinSize(wxSize(70, sourceMDFileLabel->GetMinSize().y));
     // Create Maste files list box
-    wxListBox* sourceMDFileBox = new wxListBox(m_lp, ID_LISTBOX3, wxDefaultPosition, wxSize(305, 100));
+    m_lb5 = sourceMDFileBox = new wxListBox(m_lp, ID_LISTBOX3, wxDefaultPosition, wxSize(305, 100));
     sourceMDFileSizer->Add(sourceMDFileBox, 0, wxEXPAND | wxALL, 5);
     m_lpSizer->Add(sourceMDFileSizer, 0, wxEXPAND | wxALL, 5);
 
@@ -188,12 +192,15 @@ void MainWindow::OnNew(wxCommandEvent& event)
     if (openDirDialog->ShowModal() == wxID_OK) {
         wxString DirName = openDirDialog->GetPath();
         m_lb->Append(DirName);
+        num_of_mdirs++;
     }
 }
 
 void MainWindow::OnClear(wxCommandEvent& event)
 {
     m_lb->Clear();
+    m_lb3->Clear();
+    num_of_mdirs = 0;
 }
 
 void MainWindow::OnDelete(wxCommandEvent& event)
@@ -201,15 +208,17 @@ void MainWindow::OnDelete(wxCommandEvent& event)
     int sel = m_lb->GetSelection();
     if (sel != -1) {
         m_lb->Delete(sel);
+        num_of_mdirs--;
     }
 }
 
 void MainWindow::OnSearch(wxCommandEvent& event)
 {
     m_lb3->Clear();
+    int items = 0;
     int seldirs = 0;
     int max = m_lb3->GetCount();
-    for (seldirs ; seldirs <= max+1; seldirs ++)
+    for (seldirs ; seldirs < num_of_mdirs; seldirs ++)
     { 
     wxString pathtmp = m_lb->GetString(seldirs);
     std::string s = std::string(pathtmp.mb_str());
@@ -218,24 +227,34 @@ void MainWindow::OnSearch(wxCommandEvent& event)
     wxString dirName = dir.GetName();
     wxArrayString dirList;
     dir.GetAllFiles(dirName, &dirList, wxEmptyString, wxDIR_FILES | wxDIR_DIRS);
-    int arraylength = dirList.GetCount();
     wxArrayString filteredDirList;
-    wxRegEx re("tes");
-/*
-if (re.Matches(string)
-
-        for (int i = 0; i <= arraylength; i++)
+    wxRegEx reMaster(".*IMC.*");
+  
+        for (int i = 0; i < dirList.GetCount(); i++)
         {
-            if (re.Matches(dirList.Item(i)))
+            if (reMaster.Matches(dirList[i]))
             {
                 wxString temp;
-                temp = dirList.Item(i);
-                dirList = filteredDirList.Add(temp);
+                temp = wxFileNameFromPath(dirList[i]);
+                filteredDirList.Add(temp);
+                items++;
             }
         }
-*/
-    m_lb3->Append(dirList);
+    m_lb3->Append(filteredDirList);
     }
+    
+    for (int l = 0; l < items; l++)
+    {
+        for (int m = l+1; m < items; m++)
+        {
+            if (m_lb3->GetString(l) == m_lb3->GetString(m))
+            {
+                // dupsList.Add(m_lb3->GetString(l));
+                m_lb5->Append(m_lb3->GetString(l));
+            }
+        }
+    }
+    
 }
 
 void MainWindow::OnNew2(wxCommandEvent& event)
@@ -244,12 +263,16 @@ void MainWindow::OnNew2(wxCommandEvent& event)
     if (openDirDialog->ShowModal() == wxID_OK) {
         wxString DirName = openDirDialog->GetPath();
         m_lb2->Append(DirName);
+        num_of_cdirs++;
     }
 }
 
 void MainWindow::OnClear2(wxCommandEvent& event)
 {
     m_lb2->Clear();
+    m_lb4->Clear();
+    m_lb5->Clear();
+    num_of_cdirs = 0;
 }
 
 void MainWindow::OnDelete2(wxCommandEvent& event)
@@ -257,15 +280,17 @@ void MainWindow::OnDelete2(wxCommandEvent& event)
     int sel = m_lb2->GetSelection();
     if (sel != -1) {
         m_lb2->Delete(sel);
+        num_of_cdirs--;
     }
 }
+
 
 void MainWindow::OnSearch2(wxCommandEvent& event)
 {
     m_lb4->Clear();
     int seldirs = 0;
-    int max = m_lb4->GetCount();
-    for (seldirs; seldirs <= max + 1; seldirs++)
+    //int max = m_lb4->GetCount();
+    for (seldirs; seldirs < num_of_cdirs; seldirs++)
     {
         wxString pathtmp = m_lb2->GetString(seldirs);
         std::string s = std::string(pathtmp.mb_str());
@@ -274,7 +299,19 @@ void MainWindow::OnSearch2(wxCommandEvent& event)
         wxString dirName = dir.GetName();
         wxArrayString dirList;
         dir.GetAllFiles(dirName, &dirList, wxEmptyString, wxDIR_FILES | wxDIR_DIRS);
-        m_lb4->Append(dirList);
+        wxArrayString filteredDirList;
+        wxRegEx reMaster(".*IDC.*");
+
+        for (int i = 0; i < dirList.GetCount(); i++)
+        {
+            if (reMaster.Matches(dirList[i]))
+            {
+                wxString temp;
+                temp = wxFileNameFromPath(dirList[i]);
+                filteredDirList.Add(temp);
+            }
+        }
+        m_lb4->Append(filteredDirList);
     }
 }
 
