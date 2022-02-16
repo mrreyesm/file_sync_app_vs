@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // Name:        File Sync
 // Purpose:     An application that Syncs Files
-// Developed:   15.01.2022 @HTW Berlin under the Coordination of T. Wendler
+// Developed:   15.01.2022 @HTW Berlin under the Coordination of Mr Wendler
 /////////////////////////////////////////////////////////////////////////////
 #include "App.h"
 #include "id.h"
