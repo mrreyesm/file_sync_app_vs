@@ -6,8 +6,9 @@
 #include "IdDialog.h"
 #include <wx/valgen.h>
 #include <wx/valtext.h>
+wxString fileName;
 std::string fileNameTemp;
-
+std::string extension;
 
 IdDialog::IdDialog(wxWindow* parent, wxWindowID id,
     const wxString& title,
@@ -56,18 +57,29 @@ void IdDialog::OnSelectFile(wxCommandEvent& event)
 {
     wxFileDialog* openFileDialog = new wxFileDialog(this, "Choose File for ID");
     if (openFileDialog->ShowModal() == wxID_OK) {
-        wxString fileName = openFileDialog->GetPath();
+        // wxString fileName = wxFileNameFromPath(openFileDialog->GetPath());
+        fileName = openFileDialog->GetPath();
         f_textCtrl->ChangeValue(fileName);
         std::string s = f_textCtrl->GetValue().ToStdString();
-        fileNameTemp = s;
+        size_t lastindex = s.find_last_of(".");
+        size_t idindex = s.find_last_of("_");
+        fileNameTemp = s.substr(0, idindex);
+        size_t end = s.size();
+        extension = s.substr(lastindex, end);
     }
 }
 
 void IdDialog::OnIdFile(wxCommandEvent& event)
 {
     //wxMessageBox(fileNameTemp);
-    std::string fileNameTemp2 = fileNameTemp + "_ID1234";
-    fid_textCtrl->SetValue(fileNameTemp2);
+    int max = 1000;
+    int min = 9999;
+    int randNum = rand() % (max - min + 1) + min;
+    std::string s = std::to_string(randNum);
+    std::string fileNameTemp2 = fileNameTemp + "_IDC" + s + extension;
+    wxString tempName(fileNameTemp2);
+    fid_textCtrl->SetValue(wxFileNameFromPath(fileNameTemp2));
+    rename(fileName, tempName);
 }
 
 IdDialog::~IdDialog() {}
