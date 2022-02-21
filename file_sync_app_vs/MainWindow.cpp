@@ -9,6 +9,7 @@
 #include <wx/listbox.h>
 #include <wx/dir.h>
 #include <wx/regex.h>
+#include <wx/textfile.h>
 
 // temp solution, to getting number of items from listbox
 int num_of_mdirs = 0;
@@ -215,6 +216,7 @@ void MainWindow::OnDelete(wxCommandEvent& event)
 void MainWindow::OnSearch(wxCommandEvent& event)
 {
     m_lb3->Clear();
+    m_lb5->Clear();
     int items = 0;
     int seldirs = 0;
     int max = m_lb3->GetCount();
@@ -254,7 +256,15 @@ void MainWindow::OnSearch(wxCommandEvent& event)
             }
         }
     }
-    
+    wxTextFile file(_T("masterdirs.txt"));
+    file.Open();
+    file.Clear();
+    wxArrayString list = m_lb->GetStrings();
+    size_t count = list.Count();
+    for (size_t i = 0; i < count; ++i)
+        file.AddLine(list[i]);
+    file.Write();
+    file.Close();
 }
 
 void MainWindow::OnNew2(wxCommandEvent& event)
@@ -313,6 +323,15 @@ void MainWindow::OnSearch2(wxCommandEvent& event)
         }
         m_lb4->Append(filteredDirList);
     }
+    wxTextFile file(_T("clientdirs.txt"));
+    file.Open();
+    file.Clear();
+    wxArrayString list = m_lb2->GetStrings();
+    size_t count = list.Count();
+    for (size_t i = 0; i < count; ++i)
+        file.AddLine(list[i]);
+    file.Write();
+    file.Close();
 }
 
 MainWindow::~MainWindow() {}

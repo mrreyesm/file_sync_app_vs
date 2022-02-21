@@ -6,14 +6,14 @@
 #include "App.h"
 #include "id.h"
 #include "MainWindow.h"
-//t
+
 // "int main" is implemented as below in wxWidgets
 wxIMPLEMENT_APP(App);
 
 // To create apps with WxWidgets wxApp class should be derived.
 // and OnInit needs to be override
 App::App() {}
-// initializes the program  test
+// initializes the program
 bool App::OnInit()
 {
     if (!wxApp::OnInit())
