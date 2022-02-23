@@ -262,6 +262,8 @@ void MainWindow::OnClear(wxCommandEvent& event)
 {
     m_lb->Clear();
     m_lb3->Clear();
+    m_lb5->Clear();
+    m_lb6->Clear();
     num_of_mdirs = 0;
 }
 
@@ -278,6 +280,7 @@ void MainWindow::OnSearch(wxCommandEvent& event)
 {
     m_lb3->Clear();
     m_lb5->Clear();
+    m_lb6->Clear();
     int items = 0;
     int seldirs = 0;
     int max = m_lb3->GetCount();
@@ -291,8 +294,9 @@ void MainWindow::OnSearch(wxCommandEvent& event)
     wxArrayString dirList;
     dir.GetAllFiles(dirName, &dirList, wxEmptyString, wxDIR_FILES | wxDIR_DIRS);
     wxArrayString filteredDirList;
+    wxArrayString clientDirList;
     wxRegEx reMaster(".*IMC.*");
-  
+    wxRegEx reClient(".*IDC.*");
         for (int i = 0; i < dirList.GetCount(); i++)
         {
             if (reMaster.Matches(dirList[i]))
@@ -302,8 +306,16 @@ void MainWindow::OnSearch(wxCommandEvent& event)
                 filteredDirList.Add(temp);
                 items++;
             }
+            if (reClient.Matches(dirList[i]))
+            {
+                wxString temp;
+                temp = wxFileNameFromPath(dirList[i]);
+                clientDirList.Add(temp);
+            }
+
         }
     m_lb3->Append(filteredDirList);
+    m_lb6->Append(clientDirList);
     }
     
     for (int l = 0; l < items; l++)
@@ -316,7 +328,7 @@ void MainWindow::OnSearch(wxCommandEvent& event)
             }
         }
     }
-    
+
     file.Open();
     file.Clear();
     wxArrayString list = m_lb->GetStrings();
@@ -341,7 +353,7 @@ void MainWindow::OnClear2(wxCommandEvent& event)
 {
     m_lb2->Clear();
     m_lb4->Clear();
-    m_lb5->Clear();
+    m_lb7->Clear();
     num_of_cdirs = 0;
 }
 
@@ -358,6 +370,7 @@ void MainWindow::OnDelete2(wxCommandEvent& event)
 void MainWindow::OnSearch2(wxCommandEvent& event)
 {
     m_lb4->Clear();
+    m_lb7->Clear();
     int seldirs = 0;
     for (seldirs; seldirs < num_of_cdirs; seldirs++)
     {
@@ -369,18 +382,28 @@ void MainWindow::OnSearch2(wxCommandEvent& event)
         wxArrayString dirList;
         dir.GetAllFiles(dirName, &dirList, wxEmptyString, wxDIR_FILES | wxDIR_DIRS);
         wxArrayString filteredDirList;
-        wxRegEx reMaster(".*IDC.*");
+        wxArrayString masterDirList;
+        wxRegEx reMaster(".*IMC.*");
+        wxRegEx reClient(".*IDC.*");
 
         for (int i = 0; i < dirList.GetCount(); i++)
         {
-            if (reMaster.Matches(dirList[i]))
+            if (reClient.Matches(dirList[i]))
             {
                 wxString temp;
                 temp = wxFileNameFromPath(dirList[i]);
                 filteredDirList.Add(temp);
             }
+            if (reMaster.Matches(dirList[i]))
+            {
+                wxString temp;
+                temp = wxFileNameFromPath(dirList[i]);
+                masterDirList.Add(temp);
+            }
+
         }
         m_lb4->Append(filteredDirList);
+        m_lb7->Append(masterDirList);
     }
     file2.Open();
     file2.Clear();
