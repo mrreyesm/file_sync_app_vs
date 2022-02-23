@@ -37,16 +37,28 @@ private:
     void OnDelete2(wxCommandEvent& event);
     void OnSearch2(wxCommandEvent& event);
 
+    void OnSync(wxCommandEvent& event);
+
     wxListBox* m_lb;
     wxListBox* m_lb2;
     wxListBox* listbox;
     wxListBox* listbox2;
+
     wxListBox* sourceMFileBox;
     wxListBox* m_lb3;
+
     wxListBox* targetCFileBox;
     wxListBox* m_lb4;
+
     wxListBox* sourceMDFileBox;
     wxListBox* m_lb5;
+
+    wxListBox* sourceCFileBox;
+    wxListBox* m_lb6;
+
+    wxListBox* targetMFileBox;
+    wxListBox* m_lb7;
+
     wxPanel* m_parent;
 
     wxButton* m_newb;
@@ -59,13 +71,18 @@ private:
     wxButton* m_deleteb2;
     wxButton* m_searchb2;
 
+    wxButton* m_syncb;
+
     //Data Members
     const int ID_LISTBOX  = 5;
     const int ID_LISTBOX2 = 6;
     const int ID_LISTBOX3 = 7;
     const int ID_LISTBOX4 = 8;
     const int ID_LISTBOX5 = 9;
+    const int ID_LISTBOX6 = 91;
+    const int ID_LISTBOX7 = 92;
     const int DirPickerID = 10;
     const int ID_SEARCH = 11;
     const int ID_SEARCH2 = 12;
+    const int ID_SYNC = 13;
 };

@@ -14,7 +14,9 @@
 // temp solution, to getting number of items from listbox
 int num_of_mdirs = 0;
 int num_of_cdirs = 0;
-
+wxTextFile file(_T("masterdirs.txt"));
+wxTextFile file2(_T("clientdirs.txt"));
+ 
 //The Main window object is defined
 MainWindow::MainWindow(wxWindow* parent,
     wxWindowID id,
@@ -75,7 +77,19 @@ MainWindow::MainWindow(wxWindow* parent,
     sourceSizer->Add(sourceLabel, 0, wxLEFT, 10);
     sourceLabel->SetMinSize(wxSize(70, sourceLabel->GetMinSize().y));
     //create listbox for the selected directories
-    m_lb = listbox = new wxListBox(m_lp, ID_LISTBOX, wxDefaultPosition, wxSize(305, 110));
+    m_lb = listbox = new wxListBox(m_lp, ID_LISTBOX, wxDefaultPosition, wxSize(450, 110));
+
+    //Fill listbox with master directories
+    wxTextFile file(_T("masterdirs.txt"));
+    file.Open();
+    std::string dirStr;
+    for (dirStr = file.GetFirstLine(); !file.Eof(); dirStr = file.GetNextLine())
+    {
+        m_lb->Append(dirStr);
+        num_of_mdirs++;
+    }
+    file.Close();
+
     sourceSizer->Add(listbox, 0, wxEXPAND | wxALL, 5);
     // creats a vertical box panel to put the buttons
     wxBoxSizer* vbox = new wxBoxSizer(wxVERTICAL);
@@ -106,7 +120,7 @@ MainWindow::MainWindow(wxWindow* parent,
     sourceMFileSizer->Add(sourceMFileLabel, 0, wxLEFT, 10);
     sourceMFileLabel->SetMinSize(wxSize(70, sourceMFileLabel->GetMinSize().y));
     // Create Maste files list box
-    m_lb3 = sourceMFileBox = new wxListBox(m_lp, ID_LISTBOX2, wxDefaultPosition, wxSize(305, 100));
+    m_lb3 = sourceMFileBox = new wxListBox(m_lp, ID_LISTBOX2, wxDefaultPosition, wxSize(450, 100));
     sourceMFileSizer->Add(sourceMFileBox, 0, wxEXPAND | wxALL, 5);
     m_lpSizer->Add(sourceMFileSizer, 0, wxEXPAND | wxALL, 5);
 
@@ -118,11 +132,20 @@ MainWindow::MainWindow(wxWindow* parent,
     sourceMDFileSizer->Add(sourceMDFileLabel, 0, wxLEFT, 10);
     sourceMDFileLabel->SetMinSize(wxSize(70, sourceMDFileLabel->GetMinSize().y));
     // Create Maste files list box
-    m_lb5 = sourceMDFileBox = new wxListBox(m_lp, ID_LISTBOX3, wxDefaultPosition, wxSize(305, 100));
+    m_lb5 = sourceMDFileBox = new wxListBox(m_lp, ID_LISTBOX3, wxDefaultPosition, wxSize(450, 100));
     sourceMDFileSizer->Add(sourceMDFileBox, 0, wxEXPAND | wxALL, 5);
     m_lpSizer->Add(sourceMDFileSizer, 0, wxEXPAND | wxALL, 5);
 
-
+    // Create box for Client files in Master directories
+    wxBoxSizer* sourceCFileSizer = new wxBoxSizer(wxHORIZONTAL);
+    // Create label
+    wxStaticText* sourceCFileLabel = new wxStaticText(m_lp, wxID_ANY, _("Client Files\nin Source"));
+    sourceCFileSizer->Add(sourceCFileLabel, 0, wxLEFT, 10);
+    sourceCFileLabel->SetMinSize(wxSize(70, sourceCFileLabel->GetMinSize().y));
+    // Create list box
+    m_lb6 = sourceCFileBox = new wxListBox(m_lp, ID_LISTBOX6, wxDefaultPosition, wxSize(450, 100));
+    sourceCFileSizer->Add(sourceCFileBox, 0, wxEXPAND | wxALL, 5);
+    m_lpSizer->Add(sourceCFileSizer, 0, wxEXPAND | wxALL, 5);
 
     //---------------------------------RIGHT PANEL------------------------------------------
     //Create target file sizer, label and box
@@ -132,7 +155,19 @@ MainWindow::MainWindow(wxWindow* parent,
     targetSizer->Add(targetLabel, 0, wxLEFT, 10);
     targetLabel->SetMinSize(wxSize(50, targetLabel->GetMinSize().y));
     //create listbox for the selected directories
-    m_lb2 = listbox2 = new wxListBox(m_rp, ID_LISTBOX4, wxDefaultPosition, wxSize(325, 110));
+    m_lb2 = listbox2 = new wxListBox(m_rp, ID_LISTBOX4, wxDefaultPosition, wxSize(450, 110));
+
+    //Fill listbox with master directories
+    wxTextFile file2(_T("clientdirs.txt"));
+    file2.Open();
+    std::string cliStr;
+    for (cliStr = file2.GetFirstLine(); !file2.Eof(); cliStr = file2.GetNextLine())
+    {
+        m_lb2->Append(cliStr);
+        num_of_cdirs++;
+    }
+    file2.Close();
+
     targetSizer->Add(listbox2, 0, wxEXPAND | wxALL, 5);
     // creats a vertical box panel to put the buttons
     wxBoxSizer* vbox2 = new wxBoxSizer(wxVERTICAL);
@@ -156,23 +191,49 @@ MainWindow::MainWindow(wxWindow* parent,
     m_rpSizer->Add(-1, 10);
     m_rpSizer->Add(targetSizer, 0, wxEXPAND | wxALL, 5);
 
-    // Create box for Master files
+    // Create box for Client files
     wxBoxSizer* targetCFileSizer = new wxBoxSizer(wxHORIZONTAL);
-    // Create master file label
-    wxStaticText* targetCFileLabel = new wxStaticText(m_rp, wxID_ANY, _("Client Files"));
+    // Create Client file label
+    wxStaticText* targetCFileLabel = new wxStaticText(m_rp, wxID_ANY, _("Client\nFiles"));
     targetCFileSizer->Add(targetCFileLabel, 0, wxLEFT, 10);
     targetCFileLabel->SetMinSize(wxSize(50, targetCFileLabel->GetMinSize().y));
-    // Create Maste files list box
-    m_lb4 = targetCFileBox = new wxListBox(m_rp, ID_LISTBOX5, wxDefaultPosition, wxSize(325, 100));
+    // Create Client files list box
+    m_lb4 = targetCFileBox = new wxListBox(m_rp, ID_LISTBOX5, wxDefaultPosition, wxSize(450, 100));
     targetCFileSizer->Add(targetCFileBox, 0, wxEXPAND | wxALL, 5);
+
+
+    // creats a vertical box panel to put one buttons
+    wxBoxSizer* vbox3 = new wxBoxSizer(wxVERTICAL);
+    m_syncb = new wxButton(m_rp, ID_SYNC, wxT("SYNC"));
+    //assigns actions to those buttons
+    Connect(ID_SYNC, wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainWindow::OnSync));
+    // adds each button to the panel
+    vbox3->Add(-1, 5);
+    vbox3->Add(m_syncb);
+    // adds the button panel to the source sizer
+    targetCFileSizer->Add(vbox3, 2, wxEXPAND | wxRIGHT, 10);
+    m_rpSizer->Add(-1, 10);
     m_rpSizer->Add(targetCFileSizer, 0, wxEXPAND | wxALL, 5);
+
+
+    // Create box for Master files in target
+    wxBoxSizer* targetMFileSizer = new wxBoxSizer(wxHORIZONTAL);
+    // Create Client file label
+    wxStaticText* targetMFileLabel = new wxStaticText(m_rp, wxID_ANY, _("Master\nFiles in\nTarget"));
+    targetMFileSizer->Add(targetMFileLabel, 0, wxLEFT, 10);
+    targetMFileLabel->SetMinSize(wxSize(50, targetMFileLabel->GetMinSize().y));
+    // Create Client files list box
+    m_lb7 = targetMFileBox = new wxListBox(m_rp, ID_LISTBOX7, wxDefaultPosition, wxSize(450, 100));
+    targetMFileSizer->Add(targetMFileBox, 0, wxEXPAND | wxALL, 5);
+    m_rpSizer->Add(targetMFileSizer, 0, wxEXPAND | wxALL, 5);
+
 
     //-----------------------------------------------------------------------------------------
     //Creates Status bar that can be updated in different steps
     CreateStatusBar();
     SetStatusText(_("Syncing!"));
 
-    SetMinSize(wxSize(1020, 500));
+    SetMinSize(wxSize(1300, 600));
 }
 
 void MainWindow::onIdFile(wxCommandEvent& WXUNUSED(event))
@@ -251,12 +312,11 @@ void MainWindow::OnSearch(wxCommandEvent& event)
         {
             if (m_lb3->GetString(l) == m_lb3->GetString(m))
             {
-                // dupsList.Add(m_lb3->GetString(l));
                 m_lb5->Append(m_lb3->GetString(l));
             }
         }
     }
-    wxTextFile file(_T("masterdirs.txt"));
+    
     file.Open();
     file.Clear();
     wxArrayString list = m_lb->GetStrings();
@@ -299,7 +359,6 @@ void MainWindow::OnSearch2(wxCommandEvent& event)
 {
     m_lb4->Clear();
     int seldirs = 0;
-    //int max = m_lb4->GetCount();
     for (seldirs; seldirs < num_of_cdirs; seldirs++)
     {
         wxString pathtmp = m_lb2->GetString(seldirs);
@@ -323,15 +382,19 @@ void MainWindow::OnSearch2(wxCommandEvent& event)
         }
         m_lb4->Append(filteredDirList);
     }
-    wxTextFile file(_T("clientdirs.txt"));
-    file.Open();
-    file.Clear();
+    file2.Open();
+    file2.Clear();
     wxArrayString list = m_lb2->GetStrings();
     size_t count = list.Count();
     for (size_t i = 0; i < count; ++i)
-        file.AddLine(list[i]);
-    file.Write();
-    file.Close();
+        file2.AddLine(list[i]);
+    file2.Write();
+    file2.Close();
+}
+
+void MainWindow::OnSync(wxCommandEvent& event)
+{
+    wxMessageBox("under development");
 }
 
 MainWindow::~MainWindow() {}
