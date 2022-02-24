@@ -9,7 +9,7 @@
 wxString fileName;
 std::string fileNameTemp;
 std::string extension;
-
+int master = 1;
 IdDialog::IdDialog(wxWindow* parent, wxWindowID id,
     const wxString& title,
     const wxPoint& pos,
@@ -41,6 +41,23 @@ IdDialog::IdDialog(wxWindow* parent, wxWindowID id,
     fid_textCtrl = new wxTextCtrl(this, wxID_ANY);
     idFileSizer->Add(fid_textCtrl, 1, wxEXPAND | wxALL, 5);
 
+    //Create checkboxes to select if the file is Master or CLient
+    // creats a vertical box panel to put the checkboxes
+    wxBoxSizer* vbox = new wxBoxSizer(wxVERTICAL);
+    m_cb = new wxCheckBox(this, ID_CHECKBOX, wxT("Master"),wxPoint(5, 20));
+    m_cb2 = new wxCheckBox(this, ID_CHECKBOX2, wxT("Client"), wxPoint(5, 20));
+    m_cb->SetValue(true);
+    m_cb2->SetValue(false);
+    //assigns actions to those buttons
+    Connect(ID_CHECKBOX, wxEVT_COMMAND_CHECKBOX_CLICKED,wxCommandEventHandler(IdDialog::OnToggle));
+    Connect(ID_CHECKBOX2, wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(IdDialog::OnToggle));
+    // adds each button to the panel
+    vbox->Add(-1, 5);
+    vbox->Add(m_cb);
+    vbox->Add(m_cb2, 0, wxTOP, 5);
+    // adds the button panel to the source sizer
+    idFileSizer->Add(vbox);
+
     // Add button to create ID
     wxButton* d_idb = new wxButton(this, FileID, _("Create ID"));
     Connect(FileID, wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(IdDialog::OnIdFile));
@@ -71,15 +88,36 @@ void IdDialog::OnSelectFile(wxCommandEvent& event)
 
 void IdDialog::OnIdFile(wxCommandEvent& event)
 {
-    //wxMessageBox(fileNameTemp);
-    int max = 1000;
-    int min = 9999;
-    int randNum = rand() % (max - min + 1) + min;
-    std::string s = std::to_string(randNum);
-    std::string fileNameTemp2 = fileNameTemp + "_IDC" + s + extension;
-    wxString tempName(fileNameTemp2);
-    fid_textCtrl->SetValue(wxFileNameFromPath(fileNameTemp2));
-    rename(fileName, tempName);
+    if(fileNameTemp != "")
+    {
+        int max = 1000;
+        int min = 9999;
+        int randNum = rand() % (max - min + 1) + min;
+        std::string s = std::to_string(randNum);
+        std::string filetype;
+        if (master == 1) {
+            filetype = "_IMC";
+        }
+        else {
+            filetype = "_IDC";
+        }
+        std::string fileNameTemp2 = fileNameTemp + filetype + s + extension;
+        wxString tempName(fileNameTemp2);
+        fid_textCtrl->SetValue(wxFileNameFromPath(fileNameTemp2));
+        rename(fileName, tempName);
+    }
+}
+
+void IdDialog::OnToggle(wxCommandEvent& WXUNUSED(event))
+{
+    if (m_cb->GetValue()) {
+        m_cb2->SetValue(false);
+        master = 1;
+    }
+    else if (!m_cb->GetValue()) {
+        m_cb2->SetValue(true);
+        master = 0;
+    }
 }
 
 IdDialog::~IdDialog() {}

@@ -27,12 +27,18 @@ public:
 private:
     void OnIdFile(wxCommandEvent& event);
     void OnSelectFile(wxCommandEvent& event);
+    void OnToggle(wxCommandEvent& event);
+
     wxTextCtrl* f_textCtrl;
     wxTextCtrl* fid_textCtrl;
 
     wxButton* d_addb;
     wxButton* d_idb;
+    wxCheckBox* m_cb;
+    wxCheckBox* m_cb2;
 
     const int FileID = 20;
     const int AddID = 21;
+    const int ID_CHECKBOX = 22;
+    const int ID_CHECKBOX2 = 23;
 };
