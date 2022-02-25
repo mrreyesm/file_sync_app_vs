@@ -16,6 +16,8 @@ int num_of_mdirs = 0;
 int num_of_cdirs = 0;
 wxTextFile file(_T("masterdirs.txt"));
 wxTextFile file2(_T("clientdirs.txt"));
+wxArrayString masterFiles;
+wxArrayString clientFiles;
  
 //The Main window object is defined
 MainWindow::MainWindow(wxWindow* parent,
@@ -227,6 +229,16 @@ MainWindow::MainWindow(wxWindow* parent,
     targetMFileSizer->Add(targetMFileBox, 0, wxEXPAND | wxALL, 5);
     m_rpSizer->Add(targetMFileSizer, 0, wxEXPAND | wxALL, 5);
 
+    // Create box for updated files
+    wxBoxSizer* targetUFileSizer = new wxBoxSizer(wxHORIZONTAL);
+    // Create Client file label
+    wxStaticText* targetUFileLabel = new wxStaticText(m_rp, wxID_ANY, _("Updated\nFiles"));
+    targetUFileSizer->Add(targetUFileLabel, 0, wxLEFT, 10);
+    targetUFileLabel->SetMinSize(wxSize(50, targetUFileLabel->GetMinSize().y));
+    // Create Client files list box
+    m_lb8 = targetUFileBox = new wxListBox(m_rp, ID_LISTBOX8, wxDefaultPosition, wxSize(450, 100));
+    targetUFileSizer->Add(targetUFileBox, 0, wxEXPAND | wxALL, 5);
+    m_rpSizer->Add(targetUFileSizer, 0, wxEXPAND | wxALL, 5);
 
     //-----------------------------------------------------------------------------------------
     //Creates Status bar that can be updated in different steps
@@ -302,6 +314,7 @@ void MainWindow::OnSearch(wxCommandEvent& event)
             if (reMaster.Matches(dirList[i]))
             {
                 wxString temp;
+                masterFiles.Add(dirList[i]);
                 temp = wxFileNameFromPath(dirList[i]);
                 filteredDirList.Add(temp);
                 items++;
@@ -391,6 +404,7 @@ void MainWindow::OnSearch2(wxCommandEvent& event)
             if (reClient.Matches(dirList[i]))
             {
                 wxString temp;
+                clientFiles.Add(dirList[i]);
                 temp = wxFileNameFromPath(dirList[i]);
                 filteredDirList.Add(temp);
             }
@@ -417,7 +431,56 @@ void MainWindow::OnSearch2(wxCommandEvent& event)
 
 void MainWindow::OnSync(wxCommandEvent& event)
 {
-    wxMessageBox("under development");
+    wxString mastertemp;
+    std::string masterNameTemp;
+    std::string masterExtension;
+    std::string m;
+    int mend = 0;
+    int masterlastindex = 0;
+    int masteridindex = 0;
+
+    wxString clienttemp;
+    std::string clientNameTemp;
+    std::string clientExtension;
+    std::string clientIdTemp;
+    std::string c;
+    int cend = 0;
+    int clientlastindex = 0;
+    int clientidindex = 0;
+
+    wxArrayString test;
+    test.clear();
+    m_lb8->Clear();
+    for (int l = 0; l < masterFiles.GetCount(); l++)
+    {
+        mastertemp = wxFileNameFromPath(masterFiles[l]);
+        m = mastertemp.ToStdString();
+        mend = m.size();
+        masterlastindex = m.find_last_of(".");
+        masteridindex = m.find_last_of("_");
+        masterNameTemp = m.substr(0, masteridindex);
+        masterExtension = m.substr(masterlastindex, mend);
+       
+        for (int n = 0; n < clientFiles.GetCount(); n++)
+        {             
+            clienttemp = wxFileNameFromPath(clientFiles[n]);
+            c = clienttemp.ToStdString();
+            cend = c.size();
+            clientlastindex = c.find_last_of(".");
+            clientidindex = c.find_last_of("_");
+            clientNameTemp = c.substr(0, clientidindex);
+            clientExtension = c.substr(clientlastindex, cend);
+            clientIdTemp = c.substr(clientidindex, clientlastindex);
+            
+            if (masterNameTemp == clientNameTemp && masterExtension == clientExtension)
+            {
+            test.Add(clientFiles[n]);
+            if (rename(masterFiles[l], clientFiles[n]) != 0)
+            perror("Error moving file");
+            }
+        }    
+    }
+    m_lb8->Append(test);
 }
 
 MainWindow::~MainWindow() {}
