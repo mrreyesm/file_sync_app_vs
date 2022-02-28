@@ -104,7 +104,7 @@ void IdDialog::OnIdFile(wxCommandEvent& event)
         std::string fileNameTemp2 = fileNameTemp + filetype + s + extension;
         wxString tempName(fileNameTemp2);
         fid_textCtrl->SetValue(wxFileNameFromPath(fileNameTemp2));
-        rename(fileName, tempName);
+        wxRenameFile(fileName, tempName);
     }
 }
 

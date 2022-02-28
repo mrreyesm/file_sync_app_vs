@@ -18,6 +18,7 @@ wxTextFile file(_T("masterdirs.txt"));
 wxTextFile file2(_T("clientdirs.txt"));
 wxArrayString masterFiles;
 wxArrayString clientFiles;
+wxArrayString test;
  
 //The Main window object is defined
 MainWindow::MainWindow(wxWindow* parent,
@@ -232,7 +233,7 @@ MainWindow::MainWindow(wxWindow* parent,
     // Create box for updated files
     wxBoxSizer* targetUFileSizer = new wxBoxSizer(wxHORIZONTAL);
     // Create Client file label
-    wxStaticText* targetUFileLabel = new wxStaticText(m_rp, wxID_ANY, _("Updated\nFiles"));
+    wxStaticText* targetUFileLabel = new wxStaticText(m_rp, wxID_ANY, _("Synced\nFiles"));
     targetUFileSizer->Add(targetUFileLabel, 0, wxLEFT, 10);
     targetUFileLabel->SetMinSize(wxSize(50, targetUFileLabel->GetMinSize().y));
     // Create Client files list box
@@ -243,7 +244,7 @@ MainWindow::MainWindow(wxWindow* parent,
     //-----------------------------------------------------------------------------------------
     //Creates Status bar that can be updated in different steps
     CreateStatusBar();
-    SetStatusText(_("Syncing!"));
+    SetStatusText(_(""));
 
     SetMinSize(wxSize(1300, 600));
 }
@@ -293,6 +294,9 @@ void MainWindow::OnSearch(wxCommandEvent& event)
     m_lb3->Clear();
     m_lb5->Clear();
     m_lb6->Clear();
+    m_lb8->Clear();
+    masterFiles.clear();
+    test.clear();
     int items = 0;
     int seldirs = 0;
     int max = m_lb3->GetCount();
@@ -384,6 +388,9 @@ void MainWindow::OnSearch2(wxCommandEvent& event)
 {
     m_lb4->Clear();
     m_lb7->Clear();
+    m_lb8->Clear();
+    test.clear();
+    clientFiles.clear();
     int seldirs = 0;
     for (seldirs; seldirs < num_of_cdirs; seldirs++)
     {
@@ -431,56 +438,75 @@ void MainWindow::OnSearch2(wxCommandEvent& event)
 
 void MainWindow::OnSync(wxCommandEvent& event)
 {
-    wxString mastertemp;
-    std::string masterNameTemp;
-    std::string masterExtension;
-    std::string m;
-    int mend = 0;
-    int masterlastindex = 0;
-    int masteridindex = 0;
 
-    wxString clienttemp;
-    std::string clientNameTemp;
-    std::string clientExtension;
-    std::string clientIdTemp;
-    std::string c;
-    int cend = 0;
-    int clientlastindex = 0;
-    int clientidindex = 0;
-
-    wxArrayString test;
-    test.clear();
-    m_lb8->Clear();
-    for (int l = 0; l < masterFiles.GetCount(); l++)
+    if (m_lb5->IsEmpty()&& !m_lb3->IsEmpty() && !m_lb4->IsEmpty())
     {
-        mastertemp = wxFileNameFromPath(masterFiles[l]);
-        m = mastertemp.ToStdString();
-        mend = m.size();
-        masterlastindex = m.find_last_of(".");
-        masteridindex = m.find_last_of("_");
-        masterNameTemp = m.substr(0, masteridindex);
-        masterExtension = m.substr(masterlastindex, mend);
-       
-        for (int n = 0; n < clientFiles.GetCount(); n++)
-        {             
-            clienttemp = wxFileNameFromPath(clientFiles[n]);
-            c = clienttemp.ToStdString();
-            cend = c.size();
-            clientlastindex = c.find_last_of(".");
-            clientidindex = c.find_last_of("_");
-            clientNameTemp = c.substr(0, clientidindex);
-            clientExtension = c.substr(clientlastindex, cend);
-            clientIdTemp = c.substr(clientidindex, clientlastindex);
-            
-            if (masterNameTemp == clientNameTemp && masterExtension == clientExtension)
+        wxString mastertemp;
+        std::string masterNameTemp;
+        std::string masterExtension;
+        std::string m;
+        int mend = 0;
+        int masterlastindex = 0;
+        int masteridindex = 0;
+
+        wxString clienttemp;
+        std::string clientNameTemp;
+        std::string clientExtension;
+        std::string clientIdTemp;
+        std::string c;
+        int cend = 0;
+        int clientlastindex = 0;
+        int clientidindex = 0;
+
+        test.clear();
+        m_lb8->Clear();
+        int flag = 0;
+        for (int l = 0; l < masterFiles.GetCount(); l++)
+        {
+            mastertemp = wxFileNameFromPath(masterFiles[l]);
+            m = mastertemp.ToStdString();
+            mend = m.size();
+            masterlastindex = m.find_last_of(".");
+            masteridindex = m.find_last_of("_");
+            masterNameTemp = m.substr(0, masteridindex);
+            masterExtension = m.substr(masterlastindex, mend);
+
+            for (int n = 0; n < clientFiles.GetCount(); n++)
             {
-            test.Add(clientFiles[n]);
-            if (rename(masterFiles[l], clientFiles[n]) != 0)
-            perror("Error moving file");
+                clienttemp = wxFileNameFromPath(clientFiles[n]);
+                c = clienttemp.ToStdString();
+                cend = c.size();
+                clientlastindex = c.find_last_of(".");
+                clientidindex = c.find_last_of("_");
+                clientNameTemp = c.substr(0, clientidindex);
+                clientExtension = c.substr(clientlastindex, cend);
+                clientIdTemp = c.substr(clientidindex, clientlastindex);
+
+                if (masterNameTemp == clientNameTemp && masterExtension == clientExtension)
+                {
+                    flag++;
+                    test.Add(clientFiles[n]);
+                    if (wxCopyFile(masterFiles[l], clientFiles[n]) != 0)
+                        perror("Error moving file");
+                    PushStatusText(_("Syncing!"));
+                }
             }
-        }    
+        }
+        if (!flag)
+        {
+            wxMessageBox("There are no files to be updated.",
+                "Notification", wxOK | wxICON_INFORMATION);
+        }
+        m_lb8->Append(test);
+        wxMessageBox("Files are syncronized!",
+            "Sync", wxOK | wxICON_INFORMATION);
+        PushStatusText(_(""));
     }
-    m_lb8->Append(test);
+    else {
+        wxMessageBox("Please make sure that there are files in the Master files box and in the Client files box and that there are no duplicated Master Files.",
+            "Warning", wxOK | wxICON_WARNING);
+    }
+    
 }
 
 MainWindow::~MainWindow() {}
