@@ -12,7 +12,7 @@
 class MainWindow : public wxFrame
 {
 public:
-    // Constructor
+    //Constructor
     MainWindow(wxWindow* parent,
         wxWindowID id,
         const wxString& title,
@@ -20,73 +20,81 @@ public:
         const wxSize& size = wxDefaultSize,
         long style = wxDEFAULT_FRAME_STYLE,
         const wxString& name = wxASCII_STR(wxFrameNameStr));
-    // Deconstructor           
+    //Deconstructor           
     ~MainWindow();
 private:
-    // Event handlers
+    //Event handlers/Functions
     void onIdFile(wxCommandEvent& event);
     void OnAbout(wxCommandEvent& event);
-
-    void OnNew(wxCommandEvent& event);
-    void OnClear(wxCommandEvent& event);
-    void OnDelete(wxCommandEvent& event);
-    void OnSearch(wxCommandEvent& event);
-
-    void OnNew2(wxCommandEvent& event);
-    void OnClear2(wxCommandEvent& event);
-    void OnDelete2(wxCommandEvent& event);
-    void OnSearch2(wxCommandEvent& event);
-
+    void OnAddSourceDir(wxCommandEvent& event);
+    void OnDeleteSourceDir(wxCommandEvent& event);
+    void OnClearSourceDirs(wxCommandEvent& event);
+    void OnSearchSourceDirs(wxCommandEvent& event);
+    void OnAddTargetDir(wxCommandEvent& event);
+    void OnDeleteTargetDir(wxCommandEvent& event);
+    void OnClearTargetDirs(wxCommandEvent& event);
+    void OnSearchTargetDirs(wxCommandEvent& event);
     void OnSync(wxCommandEvent& event);
 
-    wxListBox* m_lb;
-    wxListBox* m_lb2;
-    wxListBox* listbox;
-    wxListBox* listbox2;
-
-    wxListBox* sourceMFileBox;
-    wxListBox* m_lb3;
-
-    wxListBox* targetCFileBox;
-    wxListBox* m_lb4;
-
-    wxListBox* sourceMDFileBox;
-    wxListBox* m_lb5;
-
-    wxListBox* sourceCFileBox;
-    wxListBox* m_lb6;
-
-    wxListBox* targetMFileBox;
-    wxListBox* m_lb7;
-
-    wxListBox* targetUFileBox;
-    wxListBox* m_lb8;
-
-    wxPanel* m_parent;
-
-    wxButton* m_newb;
-    wxButton* m_clearb;
-    wxButton* m_deleteb;
-    wxButton* m_searchb;
-
-    wxButton* m_newb2;
-    wxButton* m_clearb2;
-    wxButton* m_deleteb2;
-    wxButton* m_searchb2;
-
-    wxButton* m_syncb;
-
-    //Data Members
-    const int ID_LISTBOX  = 5;
-    const int ID_LISTBOX2 = 6;
-    const int ID_LISTBOX3 = 7;
-    const int ID_LISTBOX4 = 8;
-    const int ID_LISTBOX5 = 9;
-    const int ID_LISTBOX6 = 91;
-    const int ID_LISTBOX7 = 92;
-    const int ID_LISTBOX8 = 93;
-    const int DirPickerID = 10;
-    const int ID_SEARCH = 11;
-    const int ID_SEARCH2 = 12;
-    const int ID_SYNC = 13;
+    //Declaration of objects
+    //---------MENU-------
+    wxMenuBar* menuBar;
+    wxMenu* menuHelp;
+    wxMenu* fileMenu;
+    wxMenuItem* idFileItem;
+    wxMenuItem* quitItem;
+    //---------LAYOUT------
+    wxPanel* parentPanel;
+    wxPanel* leftPanel;
+    wxPanel* rightPanel;
+    wxBoxSizer* leftPanelSizer;
+    wxBoxSizer* rightPanelSizer;
+    //---------SOURCE-------
+    wxBoxSizer* sourceSizer;
+    wxStaticText* sourceLabel;
+    wxListBox* sourceDirlistbox;
+    wxListBox* sdir_lbx;
+    wxBoxSizer* sourcebtnsVbox;
+    wxButton* s_addb;
+    wxButton* s_deleteb;
+    wxButton* s_clearb;
+    wxButton* s_searchb;
+    //---------MASTER---------
+    wxBoxSizer* masterFilesSizer;
+    wxStaticText* masterFilesLabel;
+    wxListBox* masterFilesListbox;
+    wxListBox* mf_lb;
+    wxBoxSizer* masterDFilesSizer;
+    wxStaticText* masterDFilesLabel;
+    wxListBox* masterDFilesListbox;
+    wxListBox* mdf_lb;
+    wxBoxSizer* sourceCFilesSizer;
+    wxStaticText* sourceCFilesLabel;
+    wxListBox* scf_lb;
+    wxListBox* sourceCFilesBox;
+    //--------TARGET---------
+    wxBoxSizer* targetSizer;
+    wxStaticText* targetLabel;
+    wxListBox* targetDirlistbox;
+    wxListBox* tdir_lbx;
+    wxBoxSizer* targetbtnsVbox;
+    wxButton* t_addb;
+    wxButton* t_deleteb;
+    wxButton* t_clearb;
+    wxButton* t_searchb;
+    //-------CLIENT---------
+    wxBoxSizer* clientFilesSizer;
+    wxStaticText* clientFilesLabel;
+    wxListBox* clientFilesListbox;
+    wxListBox* cf_lb;
+    wxBoxSizer* mcFilesbtnsVbox;
+    wxButton* mc_syncb;
+    wxBoxSizer* targetMFilesSizer;
+    wxStaticText* targetMFilesLabel;
+    wxListBox* targetMFilesBox;
+    wxListBox* tmf_lb;
+    wxBoxSizer* syncedFilesSizer;
+    wxStaticText* syncedFilesLabel;
+    wxListBox* sf_lb;
+    wxListBox* syncedFilesBox;
 };
