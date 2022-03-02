@@ -1,4 +1,0 @@
-C:\tst\c\clientdir1
-C:\tst\c\clientdir2
-C:\tst\c\clientdir3
-C:\tst\c\clientdir4

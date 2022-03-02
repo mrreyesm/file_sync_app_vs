@@ -1,3 +1,0 @@
-C:\tst\m\masterdir1
-C:\tst\m\masterdir2
-C:\tst\m\masterdir3

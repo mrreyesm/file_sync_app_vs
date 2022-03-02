@@ -56,15 +56,12 @@ MainWindow::MainWindow(wxWindow* parent,
     //Creates the menu item "ID File" that creates unique IDs for a files.
     idFileItem = fileMenu->Append(wxID_ANY, _("&ID Files\tCtrl+I"));
     Bind(wxEVT_MENU, &MainWindow::onIdFile, this, idFileItem->GetId());
-    
     //Separates features from the close event
     fileMenu->AppendSeparator();
-
     //Creates and defines the menu item to close the app
     quitItem = new wxMenuItem(fileMenu, wxID_EXIT);
     quitItem->SetBitmap(wxArtProvider::GetBitmap("wxART_QUIT"));
     Bind(wxEVT_MENU, [=](wxCommandEvent&) { Close(true); }, wxID_EXIT);
-
     //Appends the created objects to the menu bar
     fileMenu->Append(quitItem);
     menuBar->Append(fileMenu, _("&File"));
@@ -77,7 +74,7 @@ MainWindow::MainWindow(wxWindow* parent,
     parentPanel = new wxPanel(this, wxID_ANY);
     //Creates horizontal box sizer to fit left and right panels
     wxBoxSizer* hbox = new wxBoxSizer(wxHORIZONTAL);
-    //Creates main left and main right panels and 
+    //Creates left and right panels and 
     //adds them to hbox/horizontal box sizer
     leftPanel = new wxPanel(parentPanel, -1, wxPoint(-1, -1),
         wxSize(-1, -1), wxBORDER_SUNKEN);
@@ -86,9 +83,8 @@ MainWindow::MainWindow(wxWindow* parent,
     hbox->Add(leftPanel, 1, wxEXPAND | wxALL, 5);
     hbox->Add(rightPanel, 1, wxEXPAND | wxALL, 5);
     parentPanel->SetSizer(hbox);
-
     //Creates vertical boxes for the left and the right panels
-    //and asigns them to those panels
+    //and assigns them to those panels
     leftPanelSizer = new wxBoxSizer(wxVERTICAL);
     rightPanelSizer = new wxBoxSizer(wxVERTICAL);
     leftPanel->SetSizer(leftPanelSizer);
@@ -127,7 +123,6 @@ MainWindow::MainWindow(wxWindow* parent,
     s_deleteb = new wxButton(leftPanel, window::id::ID_S_REMOVE, wxT("Remove"));
     s_clearb = new wxButton(leftPanel, window::id::ID_S_CLEAR, wxT("Clear"));
     s_searchb = new wxButton(leftPanel, window::id::ID_S_SEARCH, wxT("Search"));
-
     //Assign actions to those buttons
     Connect(window::id::ID_S_ADD, wxEVT_COMMAND_BUTTON_CLICKED,
         wxCommandEventHandler(MainWindow::OnAddSourceDir));
@@ -137,7 +132,6 @@ MainWindow::MainWindow(wxWindow* parent,
         wxCommandEventHandler(MainWindow::OnClearSourceDirs));
     Connect(window::id::ID_S_SEARCH, wxEVT_COMMAND_BUTTON_CLICKED,
         wxCommandEventHandler(MainWindow::OnSearchSourceDirs));
-    
     //Adds each button to the Left panel
     sourcebtnsVbox->Add(-1, 5);
     sourcebtnsVbox->Add(s_addb);
@@ -219,7 +213,6 @@ MainWindow::MainWindow(wxWindow* parent,
     t_deleteb = new wxButton(rightPanel, window::id::ID_T_REMOVE, wxT("Remove"));
     t_clearb = new wxButton(rightPanel, window::id::ID_T_CLEAR, wxT("Clear"));
     t_searchb = new wxButton(rightPanel, window::id::ID_T_SEARCH, wxT("Search"));
-
     //Assign actions to those buttons
     Connect(window::id::ID_T_ADD, wxEVT_COMMAND_BUTTON_CLICKED,
         wxCommandEventHandler(MainWindow::OnAddTargetDir));
@@ -229,7 +222,6 @@ MainWindow::MainWindow(wxWindow* parent,
         wxCommandEventHandler(MainWindow::OnClearTargetDirs));
     Connect(window::id::ID_T_SEARCH, wxEVT_COMMAND_BUTTON_CLICKED,
         wxCommandEventHandler(MainWindow::OnSearchTargetDirs));
-
     //Adds each button to the Right panel
     targetbtnsVbox->Add(-1, 5);
     targetbtnsVbox->Add(t_addb);
@@ -256,11 +248,9 @@ MainWindow::MainWindow(wxWindow* parent,
     //Create vertical box that contains the action buttons
     mcFilesbtnsVbox = new wxBoxSizer(wxVERTICAL);
     mc_syncb = new wxButton(rightPanel, window::id::ID_SYNC, wxT("SYNC"));
-
     //Assigns actions to those buttons
     Connect(window::id::ID_SYNC, wxEVT_COMMAND_BUTTON_CLICKED,
         wxCommandEventHandler(MainWindow::OnSync));
-
     //Add buttons to the right panel
     mcFilesbtnsVbox->Add(-1, 5);
     mcFilesbtnsVbox->Add(mc_syncb);
@@ -300,29 +290,32 @@ MainWindow::MainWindow(wxWindow* parent,
     SetStatusText(_(""));
     SetMinSize(wxSize(1300, 600));
 }
-
+/*This function creates an instance of the dialog window
+when the "ID File" button is pressed*/
 void MainWindow::onIdFile(wxCommandEvent& WXUNUSED(event))
 {
-        IdDialog *idDialog = new IdDialog(this, wxID_ANY, _("ID File"));
-        idDialog->Show();
+    IdDialog *idDialog = new IdDialog(this, wxID_ANY, _("ID File"));
+    idDialog->Show();
 }
-
+/*Gives general information of the app when the "About" button inside
+the Help item in the menu bar is pressed*/
 void MainWindow::OnAbout(wxCommandEvent& event)
 {
     wxMessageBox("This is an Application to Sync Files and avoid duplicates.",
         "About File Sync", wxOK | wxICON_INFORMATION);
 }
-
+/*Opens a dialog box to choose a directory to add
+to the Source directories listbox*/
 void MainWindow::OnAddSourceDir(wxCommandEvent& event)
 {
-    wxDirDialog* openDirDialog = new wxDirDialog(this, "Choose Master directories");
+    wxDirDialog* openDirDialog = new wxDirDialog(this, "Choose Source directories");
     if (openDirDialog->ShowModal() == wxID_OK) {
         wxString DirName = openDirDialog->GetPath();
         sdir_lbx->Append(DirName);
         num_of_sdirs++;
     }
 }
-
+//Clears all listboxes in the left panel
 void MainWindow::OnClearSourceDirs(wxCommandEvent& event)
 {
     sdir_lbx->Clear();
@@ -331,7 +324,7 @@ void MainWindow::OnClearSourceDirs(wxCommandEvent& event)
     scf_lb->Clear();
     num_of_sdirs = 0;
 }
-
+//Removes a selected directory from the Source listbox
 void MainWindow::OnDeleteSourceDir(wxCommandEvent& event)
 {
     int sel = sdir_lbx->GetSelection();
@@ -340,9 +333,12 @@ void MainWindow::OnDeleteSourceDir(wxCommandEvent& event)
         num_of_sdirs--;
     }
 }
-
+/*Searches for master files inside the directories in the Source listbox.
+It also looks for duplicate master files and for client files inside the
+source directories.*/
 void MainWindow::OnSearchSourceDirs(wxCommandEvent& event)
 {
+    //Clears all listboxes and arrays and sets counters to cero
     mf_lb->Clear();
     mdf_lb->Clear();
     scf_lb->Clear();
@@ -351,20 +347,24 @@ void MainWindow::OnSearchSourceDirs(wxCommandEvent& event)
     syncFiles.clear();
     int items = 0;
     int seldirs = 0;
-    int max = mf_lb->GetCount();
+    //iterates through all directories to search for files
     for (seldirs ; seldirs < num_of_sdirs; seldirs ++)
     { 
-    wxString pathtmp = sdir_lbx->GetString(seldirs);
-    std::string s = std::string(pathtmp.mb_str());
-
-    wxDir dir(s);
-    wxString dirName = dir.GetName();
-    wxArrayString dirList;
-    dir.GetAllFiles(dirName, &dirList, wxEmptyString, wxDIR_FILES | wxDIR_DIRS);
-    wxArrayString filteredDirList;
-    wxArrayString clientDirList;
-    wxRegEx reMaster(".*IMC.*");
-    wxRegEx reClient(".*IDC.*");
+        //extract the path of the selected directory
+        wxString pathtmp = sdir_lbx->GetString(seldirs);
+        std::string s = std::string(pathtmp.mb_str());
+        wxDir dir(s);
+        wxString dirName = dir.GetName();
+        //fills an array with all the found files
+        wxArrayString dirList;
+        dir.GetAllFiles(dirName, &dirList, wxEmptyString, wxDIR_FILES | wxDIR_DIRS);
+        //creates arrays for the filtered and client files
+        wxArrayString filteredDirList;
+        wxArrayString clientDirList;
+        //regular expressions to spot master and client files
+        wxRegEx reMaster(".*IMC.*");
+        wxRegEx reClient(".*IDC.*");
+        //iterates trough all the files to find master and client files
         for (int i = 0; i < dirList.GetCount(); i++)
         {
             if (reMaster.Matches(dirList[i]))
@@ -381,12 +381,12 @@ void MainWindow::OnSearchSourceDirs(wxCommandEvent& event)
                 temp = wxFileNameFromPath(dirList[i]);
                 clientDirList.Add(temp);
             }
-
         }
-    mf_lb->Append(filteredDirList);
-    scf_lb->Append(clientDirList);
+        //append those files to the listboxes
+        mf_lb->Append(filteredDirList);
+        scf_lb->Append(clientDirList);
     }
-    
+    //Look for duplicate files
     for (int l = 0; l < items; l++)
     {
         for (int m = l+1; m < items; m++)
@@ -397,7 +397,7 @@ void MainWindow::OnSearchSourceDirs(wxCommandEvent& event)
             }
         }
     }
-
+    //Saves the Source directories names into a text file
     stxtFile.Open();
     stxtFile.Clear();
     wxArrayString list = sdir_lbx->GetStrings();
@@ -407,17 +407,18 @@ void MainWindow::OnSearchSourceDirs(wxCommandEvent& event)
     stxtFile.Write();
     stxtFile.Close();
 }
-
+/*Opens a dialog box to choose a directory to add
+to the Target directories listbox*/
 void MainWindow::OnAddTargetDir(wxCommandEvent& event)
 {
-    wxDirDialog* openDirDialog = new wxDirDialog(this, "Choose Client directories");
+    wxDirDialog* openDirDialog = new wxDirDialog(this, "Choose Target directories");
     if (openDirDialog->ShowModal() == wxID_OK) {
         wxString DirName = openDirDialog->GetPath();
         tdir_lbx->Append(DirName);
         num_of_tdirs++;
     }
 }
-
+//Clears all listboxes in the right panel
 void MainWindow::OnClearTargetDirs(wxCommandEvent& event)
 {
     tdir_lbx->Clear();
@@ -425,7 +426,7 @@ void MainWindow::OnClearTargetDirs(wxCommandEvent& event)
     tmf_lb->Clear();
     num_of_tdirs = 0;
 }
-
+//Removes a selected directory from the Target listbox
 void MainWindow::OnDeleteTargetDir(wxCommandEvent& event)
 {
     int sel = tdir_lbx->GetSelection();
@@ -434,30 +435,35 @@ void MainWindow::OnDeleteTargetDir(wxCommandEvent& event)
         num_of_tdirs--;
     }
 }
-
-
+/*Searches for client files inside the directories in the Target listbox.
+It also looks for master files inside the target directories.*/
 void MainWindow::OnSearchTargetDirs(wxCommandEvent& event)
 {
+    //Clears all listboxes and arrays and sets counters to cero
     cf_lb->Clear();
     tmf_lb->Clear();
     sf_lb->Clear();
     syncFiles.clear();
     clientFiles.clear();
     int seldirs = 0;
+    //iterates through all directories to search for files
     for (seldirs; seldirs < num_of_tdirs; seldirs++)
     {
+        //extract the path of the selected directory
         wxString pathtmp = tdir_lbx->GetString(seldirs);
         std::string s = std::string(pathtmp.mb_str());
-
         wxDir dir(s);
         wxString dirName = dir.GetName();
+        //fills an array with all the found files
         wxArrayString dirList;
         dir.GetAllFiles(dirName, &dirList, wxEmptyString, wxDIR_FILES | wxDIR_DIRS);
+        //fills an array with all the found files
         wxArrayString filteredDirList;
         wxArrayString masterDirList;
+        //regular expressions to spot master and client files
         wxRegEx reMaster(".*IMC.*");
         wxRegEx reClient(".*IDC.*");
-
+        //iterates trough all the files to find master and client files
         for (int i = 0; i < dirList.GetCount(); i++)
         {
             if (reClient.Matches(dirList[i]))
@@ -473,11 +479,12 @@ void MainWindow::OnSearchTargetDirs(wxCommandEvent& event)
                 temp = wxFileNameFromPath(dirList[i]);
                 masterDirList.Add(temp);
             }
-
         }
+        //append those files to the listboxes
         cf_lb->Append(filteredDirList);
         tmf_lb->Append(masterDirList);
     }
+    //Saves the Target directories names into a text file
     ttxtFile.Open();
     ttxtFile.Clear();
     wxArrayString list = tdir_lbx->GetStrings();
@@ -487,12 +494,20 @@ void MainWindow::OnSearchTargetDirs(wxCommandEvent& event)
     ttxtFile.Write();
     ttxtFile.Close();
 }
-
+/*This function syncronizes the client files with the master files.
+It looks for files with the same names and extensions but different IDS
+and copies the master files to the location of the client file with the
+client file name.
+NOTE: In order to use it there should not be duplicate master files.
+*/
 void MainWindow::OnSync(wxCommandEvent& event)
 {
-
+    //This make sure that there are no duplicate master files and 
+    //that the master and client files listboxes are not empty
     if (mdf_lb->IsEmpty()&& !mf_lb->IsEmpty() && !cf_lb->IsEmpty())
     {
+        //Creates variables to store names, extensions, ids and location
+        //of certain characters inside strings
         wxString mastertemp;
         std::string masterNameTemp;
         std::string masterExtension;
@@ -500,7 +515,6 @@ void MainWindow::OnSync(wxCommandEvent& event)
         int mend = 0;
         int masterlastindex = 0;
         int masteridindex = 0;
-
         wxString clienttemp;
         std::string clientNameTemp;
         std::string clientExtension;
@@ -509,12 +523,15 @@ void MainWindow::OnSync(wxCommandEvent& event)
         int cend = 0;
         int clientlastindex = 0;
         int clientidindex = 0;
-
+        //clears synced files listbox and array
         syncFiles.clear();
         sf_lb->Clear();
+        //this flag/counter makes sure that there are files to be updated
         int flag = 0;
+        //Iterates through all master files and compares them to the client files
         for (int l = 0; l < masterFiles.GetCount(); l++)
         {
+            //stores different characteristics of a master file
             mastertemp = wxFileNameFromPath(masterFiles[l]);
             m = mastertemp.ToStdString();
             mend = m.size();
@@ -522,9 +539,11 @@ void MainWindow::OnSync(wxCommandEvent& event)
             masteridindex = m.find_last_of("_");
             masterNameTemp = m.substr(0, masteridindex);
             masterExtension = m.substr(masterlastindex, mend);
-
+            //iterates through the client files and compares them to the current
+            //master file
             for (int n = 0; n < clientFiles.GetCount(); n++)
             {
+                //stores different characteristics of a client file
                 clienttemp = wxFileNameFromPath(clientFiles[n]);
                 c = clienttemp.ToStdString();
                 cend = c.size();
@@ -533,7 +552,9 @@ void MainWindow::OnSync(wxCommandEvent& event)
                 clientNameTemp = c.substr(0, clientidindex);
                 clientExtension = c.substr(clientlastindex, cend);
                 clientIdTemp = c.substr(clientidindex, clientlastindex);
-
+                //if the name and extension of a master file and a client file match
+                //the master file is copied to the client file location and overwrites
+                //that file with a copy of the master file but with the client file name
                 if (masterNameTemp == clientNameTemp && masterExtension == clientExtension)
                 {
                     flag++;
@@ -544,21 +565,23 @@ void MainWindow::OnSync(wxCommandEvent& event)
                 }
             }
         }
+        //if there are no files to be updated it raises a dialog window
         if (!flag)
         {
             wxMessageBox("There are no files to be updated.",
                 "Notification", wxOK | wxICON_INFORMATION);
         }
+        //shows the updates/syncronized files in the listbox and throws a dialog
         sf_lb->Append(syncFiles);
         wxMessageBox("Files are syncronized!",
             "Sync", wxOK | wxICON_INFORMATION);
         PushStatusText(_(""));
     }
+    //Throws a dialog if one of the master/client listboxes is empty
     else {
-        wxMessageBox("Please make sure that there are files in the Master files box and in the Client files box and that there are no duplicated Master Files.",
+        wxMessageBox("Please make sure that there are files in the Master files box and\
+            in the Client files box and that there are no duplicated Master Files.",
             "Warning", wxOK | wxICON_WARNING);
-    }
-    
+    }  
 }
-
 MainWindow::~MainWindow() {}

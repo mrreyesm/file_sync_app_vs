@@ -35,7 +35,6 @@ private:
     void OnClearTargetDirs(wxCommandEvent& event);
     void OnSearchTargetDirs(wxCommandEvent& event);
     void OnSync(wxCommandEvent& event);
-
     //Declaration of objects
     //---------MENU-------
     wxMenuBar* menuBar;

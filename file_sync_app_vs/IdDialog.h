@@ -9,8 +9,6 @@
 #include <wx/wx.h>
 #endif
 #include <wx/textctrl.h>
-#include <wx/filepicker.h>
-
 class IdDialog : public wxDialog
 {
 public:
@@ -23,22 +21,16 @@ public:
         const wxString& name = wxASCII_STR(wxDialogNameStr));
     //destructor
     virtual ~IdDialog();
-
 private:
+    //Event handlers/Functions
     void OnIdFile(wxCommandEvent& event);
     void OnSelectFile(wxCommandEvent& event);
     void OnToggle(wxCommandEvent& event);
-
+    //Declaration of objects
     wxTextCtrl* f_textCtrl;
     wxTextCtrl* fid_textCtrl;
-
     wxButton* d_addb;
     wxButton* d_idb;
     wxCheckBox* m_cb;
     wxCheckBox* m_cb2;
-
-    const int FileID = 20;
-    const int AddID = 21;
-    const int ID_CHECKBOX = 22;
-    const int ID_CHECKBOX2 = 23;
 };

@@ -8,7 +8,6 @@
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
 #endif
-
 class App : public wxApp
 {
 public:
@@ -16,5 +15,4 @@ public:
     bool OnInit();
     ~App();
 };
-
 DECLARE_APP(App);
