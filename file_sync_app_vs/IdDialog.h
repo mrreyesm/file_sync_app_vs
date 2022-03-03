@@ -27,10 +27,14 @@ private:
     void OnSelectFile(wxCommandEvent& event);
     void OnToggle(wxCommandEvent& event);
     //Declaration of objects
-    wxTextCtrl* f_textCtrl;
-    wxTextCtrl* fid_textCtrl;
-    wxButton* d_addb;
-    wxButton* d_idb;
-    wxCheckBox* m_cb;
-    wxCheckBox* m_cb2;
+    wxBoxSizer* mainSizer;
+    wxBoxSizer* idFileSizer;
+    wxStaticText* fileLable;
+    wxTextCtrl* filetxtCtrl;
+    wxTextCtrl* idFiletxtCtrl;
+    wxButton* addFileBtn;
+    wxBoxSizer* vbox;
+    wxCheckBox* masterCheckBox;
+    wxCheckBox* clientCheckBox;
+    wxButton* createIDbtn;
 };

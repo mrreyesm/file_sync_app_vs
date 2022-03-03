@@ -26,9 +26,9 @@ namespace window
         ID_SYNC = 13,
         ID_TMF_LISTBOX = 92,
         ID_SF_LISTBOX = 93,
-        FileID = 20,
-        AddID = 21,
-        ID_CHECKBOX = 22,
-        ID_CHECKBOX2 = 23
+        ID_IDFILE = 20,
+        ID_IDADD = 21,
+        ID_MASTERCHBOX = 22,
+        ID_CLIENTCHBOX = 23
     };
 }

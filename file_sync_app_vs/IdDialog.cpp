@@ -10,6 +10,9 @@
 #include "id.h"
 #include <wx/valgen.h>
 #include <wx/valtext.h>
+#include <ctime>
+#include <iostream>
+
 // ----------------------------------------------------------------------------
 // Global variables
 // ----------------------------------------------------------------------------
@@ -29,56 +32,56 @@ IdDialog::IdDialog(wxWindow* parent, wxWindowID id,
     const wxString& name) :
     wxDialog(parent, id, title, pos, size, style, name){
     //Create main sizer with a horizontal sizer to store the components
-    wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
-    wxBoxSizer* idFileSizer = new wxBoxSizer(wxHORIZONTAL);
+    mainSizer = new wxBoxSizer(wxVERTICAL);
+    idFileSizer = new wxBoxSizer(wxHORIZONTAL);
     //Creates a label and a textbox to store the file that is going to be ID
-    wxStaticText* idFileLable = new wxStaticText(this, wxID_ANY, _("File"));
-    idFileLable->SetMinSize(wxSize(50, idFileLable->GetMinSize().y));
-    idFileSizer->Add(idFileLable, 0, wxALL, 5);
-    f_textCtrl = new wxTextCtrl(this, wxID_ANY);
-    idFileSizer->Add(f_textCtrl, 1, wxEXPAND | wxALL, 5);
+    wxStaticText* fileLable = new wxStaticText(this, wxID_ANY, _("File"));
+    fileLable->SetMinSize(wxSize(50, fileLable->GetMinSize().y));
+    idFileSizer->Add(fileLable, 0, wxALL, 5);
+    filetxtCtrl = new wxTextCtrl(this, wxID_ANY);
+    idFileSizer->Add(filetxtCtrl, 1, wxEXPAND | wxALL, 5);
     // ------------------------------------------------------------------------
     // Add/Select file button
     // ------------------------------------------------------------------------
     //Button to select file that will be ID
-    d_addb = new wxButton(this, window::id::AddID, wxT("Add"));
-    Connect(window::id::AddID, wxEVT_COMMAND_BUTTON_CLICKED,
+    addFileBtn = new wxButton(this, window::id::ID_IDADD, wxT("Add"));
+    Connect(window::id::ID_IDADD, wxEVT_COMMAND_BUTTON_CLICKED,
         wxCommandEventHandler(IdDialog::OnSelectFile));
-    idFileSizer->Add(d_addb, 0, wxTOP, 5);
-    // Create box for the File that is going to be modified
-    fid_textCtrl = new wxTextCtrl(this, wxID_ANY);
-    idFileSizer->Add(fid_textCtrl, 1, wxEXPAND | wxALL, 5);
+    idFileSizer->Add(addFileBtn, 0, wxTOP, 5);
+    // Create a text box to see the ID file
+    idFiletxtCtrl = new wxTextCtrl(this, wxID_ANY);
+    idFileSizer->Add(idFiletxtCtrl, 1, wxEXPAND | wxALL, 5);
     // ------------------------------------------------------------------------
     // Master/Client checkboxes
     // ------------------------------------------------------------------------
     //Create checkboxes to select if the file is Master or CLient
-    // creats a vertical box panel to put the checkboxes
-    wxBoxSizer* vbox = new wxBoxSizer(wxVERTICAL);
-    m_cb = new wxCheckBox(this, window::id::ID_CHECKBOX,
+    //Creats a vertical box panel to put the checkboxes
+    vbox = new wxBoxSizer(wxVERTICAL);
+    masterCheckBox = new wxCheckBox(this, window::id::ID_MASTERCHBOX,
         wxT("Master"),wxPoint(5, 20));
-    m_cb2 = new wxCheckBox(this, window::id::ID_CHECKBOX2,
+    clientCheckBox = new wxCheckBox(this, window::id::ID_CLIENTCHBOX,
         wxT("Client"), wxPoint(5, 20));
-    m_cb->SetValue(true);
-    m_cb2->SetValue(false);
+    masterCheckBox->SetValue(true);
+    clientCheckBox->SetValue(false);
     //assigns actions to those buttons
-    Connect(window::id::ID_CHECKBOX, wxEVT_COMMAND_CHECKBOX_CLICKED,
+    Connect(window::id::ID_MASTERCHBOX, wxEVT_COMMAND_CHECKBOX_CLICKED,
         wxCommandEventHandler(IdDialog::OnToggle));
-    Connect(window::id::ID_CHECKBOX2, wxEVT_COMMAND_CHECKBOX_CLICKED,
+    Connect(window::id::ID_CLIENTCHBOX, wxEVT_COMMAND_CHECKBOX_CLICKED,
         wxCommandEventHandler(IdDialog::OnToggle));
     // adds each button to the panel
     vbox->Add(-1, 5);
-    vbox->Add(m_cb);
-    vbox->Add(m_cb2, 0, wxTOP, 5);
+    vbox->Add(masterCheckBox);
+    vbox->Add(clientCheckBox, 0, wxTOP, 5);
     // adds the button panel to the source sizer
     idFileSizer->Add(vbox);
     // ------------------------------------------------------------------------
     // Create ID button
     // ------------------------------------------------------------------------
     // Add button to create ID
-    wxButton* d_idb = new wxButton(this, window::id::FileID, _("Create ID"));
-    Connect(window::id::FileID, wxEVT_COMMAND_BUTTON_CLICKED,
+    createIDbtn = new wxButton(this, window::id::ID_IDFILE, _("Create ID"));
+    Connect(window::id::ID_IDFILE, wxEVT_COMMAND_BUTTON_CLICKED,
         wxCommandEventHandler(IdDialog::OnIdFile));
-    idFileSizer->Add(d_idb, 0, wxALL, 5);
+    idFileSizer->Add(createIDbtn, 0, wxALL, 5);
     mainSizer->Add(idFileSizer, 0, wxEXPAND | wxALL, 5);
     SetSizer(mainSizer);
     // ------------------------------------------------------------------------
@@ -90,11 +93,13 @@ IdDialog::IdDialog(wxWindow* parent, wxWindowID id,
 //Opens a dialog window to select a file and gets its name, extension and ID
 void IdDialog::OnSelectFile(wxCommandEvent& event)
 {
+    //Opens a files dialog to select a file
     wxFileDialog* openFileDialog = new wxFileDialog(this, "Choose File for ID");
-    if (openFileDialog->ShowModal() == wxID_OK) {
+    if (openFileDialog->ShowModal() == wxID_OK){
+        //Once you select a file it gets the path and all its components
         fileName = openFileDialog->GetPath();
-        f_textCtrl->ChangeValue(fileName);
-        std::string s = f_textCtrl->GetValue().ToStdString();
+        filetxtCtrl->ChangeValue(fileName);
+        std::string s = filetxtCtrl->GetValue().ToStdString();
         size_t lastindex = s.find_last_of(".");
         size_t idindex = s.find_last_of("_");
         fileNameTemp = s.substr(0, idindex);
@@ -103,36 +108,56 @@ void IdDialog::OnSelectFile(wxCommandEvent& event)
     }
 }
 //Creates the ID of the file and renames the file
+//It IDs the gile based on the date and time, including seconds
+//so that it is impossible to have 2 same IDs
+//it can also include a random number but it will get too long
 void IdDialog::OnIdFile(wxCommandEvent& event)
 {
-    if(fileNameTemp != "")
-    {
+    if(fileNameTemp != ""){
+        //creates random number
         int max = 1000;
         int min = 9999;
         int randNum = rand() % (max - min + 1) + min;
-        std::string s = std::to_string(randNum);
+        //gets localtime and separates it into different variables
+        std::time_t t = std::time(0);   // get time now
+        std::tm* now = std::localtime(&t);
+        std::string year = std::to_string(now->tm_year+1900);
+        std::string month = std::to_string(now->tm_mon + 1);
+        std::string day = std::to_string(now->tm_mday);
+        std::string hours = std::to_string(now->tm_hour);
+        std::string minutes = std::to_string(now->tm_min);
+        std::string seconds = std::to_string(now->tm_sec);
+        std::string randnumber = std::to_string(randNum);
+        //hash id?    
+        //sets filetype based on the checkboxes
         std::string filetype;
         if (master == 1) {
-            filetype = "_IMC";
+            filetype = "_IMC-";
         }
         else {
-            filetype = "_IDC";
+            filetype = "_IDC-";
         }
-        std::string fileNameTemp2 = fileNameTemp + filetype + s + extension;
-        wxString tempName(fileNameTemp2);
-        fid_textCtrl->SetValue(wxFileNameFromPath(fileNameTemp2));
+        //Concatenates everything and renames the file.
+        std::string date = year+month+day;
+        std::string time = hours+minutes+seconds;
+        //std::string finalFileName = fileNameTemp + filetype + date + '-' + time + '-' + randnumber + extension;
+        std::string finalFileName = fileNameTemp + filetype + date + '-' + time + extension;
+        wxString tempName(finalFileName);
+        idFiletxtCtrl->SetValue(wxFileNameFromPath(finalFileName));
         wxRenameFile(fileName, tempName);
     }
 }
 //Small function to select if the files is master or client
 void IdDialog::OnToggle(wxCommandEvent& WXUNUSED(event))
 {
-    if (m_cb->GetValue()) {
-        m_cb2->SetValue(false);
+    //this function only lets you select either master or client type
+    //and it always has to have one selected
+    if (masterCheckBox->GetValue()) {
+        clientCheckBox->SetValue(false);
         master = 1;
     }
-    else if (!m_cb->GetValue()) {
-        m_cb2->SetValue(true);
+    else if (!masterCheckBox->GetValue()) {
+        clientCheckBox->SetValue(true);
         master = 0;
     }
 }
