@@ -579,8 +579,7 @@ void MainWindow::OnSync(wxCommandEvent& event)
     }
     //Throws a dialog if one of the master/client listboxes is empty
     else {
-        wxMessageBox("Please make sure that there are files in the Master files box and\
-            in the Client files box and that there are no duplicated Master Files.",
+        wxMessageBox("Please make sure that there are files in the Master files box and in the Client files box and that there are no duplicated Master Files.",
             "Warning", wxOK | wxICON_WARNING);
     }  
 }
