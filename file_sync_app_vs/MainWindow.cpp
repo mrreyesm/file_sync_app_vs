@@ -362,7 +362,7 @@ void MainWindow::OnSearchSourceDirs(wxCommandEvent& event)
         wxArrayString filteredDirList;
         wxArrayString clientDirList;
         //regular expressions to spot master and client files
-        wxRegEx reMaster(".*IMC.*");
+        wxRegEx reMaster(".*IDM.*");
         wxRegEx reClient(".*IDC.*");
         //iterates trough all the files to find master and client files
         for (int i = 0; i < dirList.GetCount(); i++)
@@ -461,7 +461,7 @@ void MainWindow::OnSearchTargetDirs(wxCommandEvent& event)
         wxArrayString filteredDirList;
         wxArrayString masterDirList;
         //regular expressions to spot master and client files
-        wxRegEx reMaster(".*IMC.*");
+        wxRegEx reMaster(".*IDM.*");
         wxRegEx reClient(".*IDC.*");
         //iterates trough all the files to find master and client files
         for (int i = 0; i < dirList.GetCount(); i++)
