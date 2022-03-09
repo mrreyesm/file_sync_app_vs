@@ -17,6 +17,14 @@
 //Event table for static events
 BEGIN_EVENT_TABLE(MainWindow, wxFrame)
 EVT_UPDATE_UI(window::id::ID_SYNC, MainWindow::onUpdateSyncButton)
+EVT_LISTBOX_DCLICK(window::id::ID_S_LISTBOX, MainWindow::OnSourceListBoxDirDClick)
+EVT_LISTBOX_DCLICK(window::id::ID_T_LISTBOX, MainWindow::OnTargetListBoxDirDClick)
+EVT_LISTBOX_DCLICK(window::id::ID_MF_LISTBOX, MainWindow::OnMasterListBoxFileDClick)
+EVT_LISTBOX_DCLICK(window::id::ID_CF_LISTBOX, MainWindow::OnClientListBoxFileDClick)
+EVT_LISTBOX_DCLICK(window::id::ID_SCF_LISTBOX, MainWindow::OnSourceClientListBoxFileDClick)
+EVT_LISTBOX_DCLICK(window::id::ID_TMF_LISTBOX, MainWindow::OnTargetMasterListBoxFileDClick)
+EVT_LISTBOX_DCLICK(window::id::ID_MDF_LISTBOX, MainWindow::OnMFDuplicatesListBoxFileDClick)
+EVT_LISTBOX_DCLICK(window::id::ID_SF_LISTBOX, MainWindow::OnSyncListBoxFileDClick)
 END_EVENT_TABLE()
 // ----------------------------------------------------------------------------
 // Global variables
@@ -627,5 +635,49 @@ void MainWindow::onUpdateSyncButton(wxUpdateUIEvent& event)
     {
      event.Enable(true);
     }
+}
+//this function opens a file explorer with the selected source dir
+void MainWindow::OnSourceListBoxDirDClick(wxCommandEvent& event)
+{
+    wxMessageBox("test.",
+        "test", wxOK | wxICON_INFORMATION);
+}
+//this function opens a file explorer with the selected target dir
+void MainWindow::OnTargetListBoxDirDClick(wxCommandEvent& event)
+{
+    wxMessageBox("test.",
+        "test", wxOK | wxICON_INFORMATION);
+}
+//this function opens a file explorer with the selected master file
+void MainWindow::OnMasterListBoxFileDClick(wxCommandEvent& event)
+{
+    wxMessageBox("test.",
+        "test", wxOK | wxICON_INFORMATION);
+}
+//this function opens a file explorer with the selected client file
+void MainWindow::OnClientListBoxFileDClick(wxCommandEvent& event)
+{
+    wxMessageBox("test.",
+        "test", wxOK | wxICON_INFORMATION);
+}
+void MainWindow::OnSourceClientListBoxFileDClick(wxCommandEvent& event)
+{
+    wxMessageBox("test.",
+        "test", wxOK | wxICON_INFORMATION);
+}
+void MainWindow::OnTargetMasterListBoxFileDClick(wxCommandEvent& event)
+{
+    wxMessageBox("test.",
+        "test", wxOK | wxICON_INFORMATION);
+}
+void MainWindow::OnMFDuplicatesListBoxFileDClick(wxCommandEvent& event)
+{
+    wxMessageBox("test.",
+        "test", wxOK | wxICON_INFORMATION);
+}
+void MainWindow::OnSyncListBoxFileDClick(wxCommandEvent& event)
+{
+    wxMessageBox("test.",
+        "test", wxOK | wxICON_INFORMATION);
 }
 MainWindow::~MainWindow() {}

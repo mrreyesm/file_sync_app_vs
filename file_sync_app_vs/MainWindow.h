@@ -36,6 +36,14 @@ private:
     void OnSearchTargetDirs(wxCommandEvent& event);
     void OnSync(wxCommandEvent& event);
     void onUpdateSyncButton(wxUpdateUIEvent& event);
+    void OnSourceListBoxDirDClick(wxCommandEvent& event);
+    void OnTargetListBoxDirDClick(wxCommandEvent& event);
+    void OnMasterListBoxFileDClick(wxCommandEvent& event);
+    void OnClientListBoxFileDClick(wxCommandEvent& event);
+    void OnSourceClientListBoxFileDClick(wxCommandEvent& event);
+    void OnTargetMasterListBoxFileDClick(wxCommandEvent& event);
+    void OnMFDuplicatesListBoxFileDClick(wxCommandEvent& event);
+    void OnSyncListBoxFileDClick(wxCommandEvent& event);
     //Declaration of objects
     //---------MENU-------
     wxMenuBar* menuBar;
