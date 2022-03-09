@@ -16,15 +16,24 @@
 #include <wx/textfile.h>
 //Event table for static events
 BEGIN_EVENT_TABLE(MainWindow, wxFrame)
-EVT_UPDATE_UI(window::id::ID_SYNC, MainWindow::onUpdateSyncButton)
-EVT_LISTBOX_DCLICK(window::id::ID_S_LISTBOX, MainWindow::OnSourceListBoxDirDClick)
-EVT_LISTBOX_DCLICK(window::id::ID_T_LISTBOX, MainWindow::OnTargetListBoxDirDClick)
-EVT_LISTBOX_DCLICK(window::id::ID_MF_LISTBOX, MainWindow::OnMasterListBoxFileDClick)
-EVT_LISTBOX_DCLICK(window::id::ID_CF_LISTBOX, MainWindow::OnClientListBoxFileDClick)
-EVT_LISTBOX_DCLICK(window::id::ID_SCF_LISTBOX, MainWindow::OnSourceClientListBoxFileDClick)
-EVT_LISTBOX_DCLICK(window::id::ID_TMF_LISTBOX, MainWindow::OnTargetMasterListBoxFileDClick)
-EVT_LISTBOX_DCLICK(window::id::ID_MDF_LISTBOX, MainWindow::OnMFDuplicatesListBoxFileDClick)
-EVT_LISTBOX_DCLICK(window::id::ID_SF_LISTBOX, MainWindow::OnSyncListBoxFileDClick)
+EVT_UPDATE_UI(window::id::ID_SYNC,
+    MainWindow::onUpdateSyncButton)
+EVT_LISTBOX_DCLICK(window::id::ID_S_LISTBOX,
+    MainWindow::OnSourceListBoxDirDClick)
+EVT_LISTBOX_DCLICK(window::id::ID_T_LISTBOX,
+    MainWindow::OnTargetListBoxDirDClick)
+EVT_LISTBOX_DCLICK(window::id::ID_MF_LISTBOX,
+    MainWindow::OnMasterListBoxFileDClick)
+EVT_LISTBOX_DCLICK(window::id::ID_CF_LISTBOX,
+    MainWindow::OnClientListBoxFileDClick)
+EVT_LISTBOX_DCLICK(window::id::ID_SCF_LISTBOX,
+    MainWindow::OnSourceClientListBoxFileDClick)
+EVT_LISTBOX_DCLICK(window::id::ID_TMF_LISTBOX,
+    MainWindow::OnTargetMasterListBoxFileDClick)
+EVT_LISTBOX_DCLICK(window::id::ID_MDF_LISTBOX,
+    MainWindow::OnMFDuplicatesListBoxFileDClick)
+EVT_LISTBOX_DCLICK(window::id::ID_SF_LISTBOX,
+    MainWindow::OnSyncListBoxFileDClick)
 END_EVENT_TABLE()
 // ----------------------------------------------------------------------------
 // Global variables
@@ -639,8 +648,8 @@ void MainWindow::onUpdateSyncButton(wxUpdateUIEvent& event)
 //this function opens a file explorer with the selected source dir
 void MainWindow::OnSourceListBoxDirDClick(wxCommandEvent& event)
 {
-    wxMessageBox("test.",
-        "test", wxOK | wxICON_INFORMATION);
+    //wxMessageBox("test.","test", wxOK | wxICON_INFORMATION);
+    wxExecute(wxT("explorer C:\\tst\\m\\masterdir1"), wxEXEC_ASYNC, NULL);
 }
 //this function opens a file explorer with the selected target dir
 void MainWindow::OnTargetListBoxDirDClick(wxCommandEvent& event)
