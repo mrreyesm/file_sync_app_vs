@@ -14,6 +14,10 @@
 #include <wx/dir.h>
 #include <wx/regex.h>
 #include <wx/textfile.h>
+//Event table for static events
+BEGIN_EVENT_TABLE(MainWindow, wxFrame)
+EVT_UPDATE_UI(window::id::ID_SYNC, MainWindow::onUpdateSyncButton)
+END_EVENT_TABLE()
 // ----------------------------------------------------------------------------
 // Global variables
 // ----------------------------------------------------------------------------
@@ -318,11 +322,27 @@ void MainWindow::OnAddSourceDir(wxCommandEvent& event)
 //Clears all listboxes in the left panel
 void MainWindow::OnClearSourceDirs(wxCommandEvent& event)
 {
-    sdir_lbx->Clear();
-    mf_lb->Clear();
-    mdf_lb->Clear();
-    scf_lb->Clear();
-    num_of_sdirs = 0;
+    int dialog_return_value = wxID_NO;
+    wxMessageDialog* dial = new wxMessageDialog(NULL,
+        _("Are you sure you want to remove from the list all the current Source directories"),
+        _("Remove Source Directories"), wxYES_NO | wxICON_WARNING);
+    dialog_return_value = dial->ShowModal();
+    switch (dialog_return_value) // Use switch, scales to more buttons later
+    {
+    case wxID_YES:
+        sdir_lbx->Clear();
+        mf_lb->Clear();
+        mdf_lb->Clear();
+        scf_lb->Clear();
+        num_of_sdirs = 0;
+        //Saves the Target directories names into a text file
+        stxtFile.Open();
+        stxtFile.Clear();
+        stxtFile.Close();
+    case wxID_NO:
+        break;
+    default:;
+    };
 }
 //Removes a selected directory from the Source listbox
 void MainWindow::OnDeleteSourceDir(wxCommandEvent& event)
@@ -421,10 +441,26 @@ void MainWindow::OnAddTargetDir(wxCommandEvent& event)
 //Clears all listboxes in the right panel
 void MainWindow::OnClearTargetDirs(wxCommandEvent& event)
 {
-    tdir_lbx->Clear();
-    cf_lb->Clear();
-    tmf_lb->Clear();
-    num_of_tdirs = 0;
+    int dialog_return_value = wxID_NO;
+    wxMessageDialog* dial = new wxMessageDialog(NULL,
+        _("Are you sure you want to remove from the list all the current Target directories"),
+        _("Remove Target Directories"), wxYES_NO | wxICON_WARNING);
+    dialog_return_value = dial->ShowModal();
+    switch (dialog_return_value) // Use switch, scales to more buttons later
+    {
+    case wxID_YES:
+        tdir_lbx->Clear();
+        cf_lb->Clear();
+        tmf_lb->Clear();
+        num_of_tdirs = 0;
+        //Saves the Target directories names into a text file
+        ttxtFile.Open();
+        ttxtFile.Clear();
+        ttxtFile.Close();
+    case wxID_NO:
+        break;
+    default:;
+    };
 }
 //Removes a selected directory from the Target listbox
 void MainWindow::OnDeleteTargetDir(wxCommandEvent& event)
@@ -583,5 +619,13 @@ void MainWindow::OnSync(wxCommandEvent& event)
             in the Client files box and that there are no duplicated Master Files.",
             "Warning", wxOK | wxICON_WARNING);
     }  
+}
+void MainWindow::onUpdateSyncButton(wxUpdateUIEvent& event)
+{
+    event.Enable(false);
+    if (mdf_lb->IsEmpty() && !mf_lb->IsEmpty() && !cf_lb->IsEmpty())
+    {
+     event.Enable(true);
+    }
 }
 MainWindow::~MainWindow() {}

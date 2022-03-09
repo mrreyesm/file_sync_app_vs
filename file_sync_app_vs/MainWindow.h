@@ -35,6 +35,7 @@ private:
     void OnClearTargetDirs(wxCommandEvent& event);
     void OnSearchTargetDirs(wxCommandEvent& event);
     void OnSync(wxCommandEvent& event);
+    void onUpdateSyncButton(wxUpdateUIEvent& event);
     //Declaration of objects
     //---------MENU-------
     wxMenuBar* menuBar;
@@ -96,4 +97,6 @@ private:
     wxStaticText* syncedFilesLabel;
     wxListBox* sf_lb;
     wxListBox* syncedFilesBox;
+
+    DECLARE_EVENT_TABLE()
 };

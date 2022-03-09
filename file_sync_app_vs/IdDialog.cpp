@@ -14,24 +14,6 @@
 #include <iostream>
 #include "md5.h"
 #include <algorithm>
-//this function iterates trough the string and capitalizes lower case chars
-std::string capitalizeString(std::string s) {
-    std::string v;
-    std::string x;
-    for (int i = 0; i < s.size(); i++) {
-        if (isalpha(s[i])) {
-            if (isupper(s[i])) {
-                v = v + s[i];
-            }
-            else {
-                x = toupper(s[i]);
-                v = v + x;
-            }
-        }
-        else v = v + s[i];
-    }
-    return v;
-}
 // ----------------------------------------------------------------------------
 // Global variables
 // ----------------------------------------------------------------------------
@@ -108,6 +90,24 @@ IdDialog::IdDialog(wxWindow* parent, wxWindowID id,
     // ------------------------------------------------------------------------
     SetMinSize(wxSize(1020, 100)); //min size of the dialog
     Fit();
+}
+//this function iterates trough the string and capitalizes lower case chars
+std::string capitalizeString(std::string s) {
+    std::string v;
+    std::string x;
+    for (int i = 0; i < s.size(); i++) {
+        if (isalpha(s[i])) {
+            if (isupper(s[i])) {
+                v = v + s[i];
+            }
+            else {
+                x = toupper(s[i]);
+                v = v + x;
+            }
+        }
+        else v = v + s[i];
+    }
+    return v;
 }
 //Opens a dialog window to select a file and gets its name, extension and ID
 void IdDialog::OnSelectFile(wxCommandEvent& event)
