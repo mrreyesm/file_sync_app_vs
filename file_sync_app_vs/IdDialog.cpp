@@ -162,6 +162,24 @@ void IdDialog::OnIdFile(wxCommandEvent& event)
         idFiletxtCtrl->SetValue(wxFileNameFromPath(finalFileName));
         wxRenameFile(fileName, tempName);
         md5hash7.clear();
+        wxMessageBox("The file has been renamed with a unique ID.",
+            "ID File", wxOK | wxICON_INFORMATION);
+        int dialog_return_value = wxID_NO;
+        wxMessageDialog* dial = new wxMessageDialog(NULL,
+            _("Would you like to ID another file?"),
+            _("ID File"), wxYES_NO | wxICON_QUESTION);
+        dialog_return_value = dial->ShowModal();
+        switch (dialog_return_value) // Use switch, scales to more buttons later
+        {
+        case wxID_YES:
+            filetxtCtrl->Clear();
+            idFiletxtCtrl->Clear();
+            break;
+        case wxID_NO:
+            Close();
+            break;
+        default:;
+        };
     }
     
 }

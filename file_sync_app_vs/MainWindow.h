@@ -97,6 +97,7 @@ private:
     wxListBox* cf_lb;
     wxBoxSizer* mcFilesbtnsVbox;
     wxButton* mc_syncb;
+    wxButton* exitb;
     wxBoxSizer* targetMFilesSizer;
     wxStaticText* targetMFilesLabel;
     wxListBox* targetMFilesBox;
