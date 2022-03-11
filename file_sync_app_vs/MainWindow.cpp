@@ -846,7 +846,7 @@ void MainWindow::OnClientListBoxFileDClick(wxCommandEvent& event)///////////////
             int dialog_return_value = wxID_NO;
             wxMessageDialog* dial = new wxMessageDialog(NULL,
                 _("Directory opened.\nWould you like to open the file?"),
-                _("Master Files"), wxYES_NO | wxICON_QUESTION);
+                _("Client Files"), wxYES_NO | wxICON_QUESTION);
             dialog_return_value = dial->ShowModal();
             switch (dialog_return_value) // Use switch, scales to more buttons later
             {
@@ -876,7 +876,7 @@ void MainWindow::OnSourceClientListBoxFileDClick(wxCommandEvent& event)/////////
             int dialog_return_value = wxID_NO;
             wxMessageDialog* dial = new wxMessageDialog(NULL,
                 _("Directory opened.\nWould you like to open the file?"),
-                _("Master Files"), wxYES_NO | wxICON_QUESTION);
+                _("Client files in Source directories"), wxYES_NO | wxICON_QUESTION);
             dialog_return_value = dial->ShowModal();
             switch (dialog_return_value) // Use switch, scales to more buttons later
             {
@@ -906,7 +906,7 @@ void MainWindow::OnTargetMasterListBoxFileDClick(wxCommandEvent& event)/////////
             int dialog_return_value = wxID_NO;
             wxMessageDialog* dial = new wxMessageDialog(NULL,
                 _("Directory opened.\nWould you like to open the file?"),
-                _("Master Files"), wxYES_NO | wxICON_QUESTION);
+                _("Master Files in Target directories"), wxYES_NO | wxICON_QUESTION);
             dialog_return_value = dial->ShowModal();
             switch (dialog_return_value) // Use switch, scales to more buttons later
             {
@@ -936,7 +936,7 @@ void MainWindow::OnMFDuplicatesListBoxFileDClick(wxCommandEvent& event)/////////
             int dialog_return_value = wxID_NO;
             wxMessageDialog* dial = new wxMessageDialog(NULL,
                 _("Directory opened.\nWould you like to open the file?"),
-                _("Master Files"), wxYES_NO | wxICON_QUESTION);
+                _("Master Duplicated Files"), wxYES_NO | wxICON_QUESTION);
             dialog_return_value = dial->ShowModal();
             switch (dialog_return_value) // Use switch, scales to more buttons later
             {
