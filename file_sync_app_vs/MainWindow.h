@@ -36,6 +36,8 @@ private:
     void OnSearchTargetDirs(wxCommandEvent& event);
     void OnSync(wxCommandEvent& event);
     void onUpdateSyncButton(wxUpdateUIEvent& event);
+    void onUpdateSearchSourceButton(wxUpdateUIEvent& event);
+    void onUpdateTargetButton(wxUpdateUIEvent& event);
     void OnSourceListBoxDirDClick(wxCommandEvent& event);
     void OnTargetListBoxDirDClick(wxCommandEvent& event);
     void OnMasterListBoxFileDClick(wxCommandEvent& event);
