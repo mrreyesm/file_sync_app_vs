@@ -6,7 +6,6 @@
 // ----------------------------------------------------------------------------
 // Libraries
 // ----------------------------------------------------------------------------
-
 #include "MainWindow.h"
 #include "IdDialog.h"
 #include "id.h"
@@ -144,6 +143,7 @@ MainWindow::MainWindow(wxWindow* parent,
         if (!wxDirExists(sdirNameStr)) { 
             nonexistingsdirs++; 
             sdir_lbx->Append(sdirNameStr + "<<<<<<<<<WARNING! DIRECTORY NOT FOUND.");
+            sdir_lbx->SetBackgroundColour(wxT("red"));
         }
         else {
             sdir_lbx->Append(sdirNameStr);
@@ -155,19 +155,6 @@ MainWindow::MainWindow(wxWindow* parent,
             "Directory not found", wxOK | wxICON_WARNING);
     }
     stxtFile.Close();
-
-    wxRegEx reDirNotFound(".*WARNING!*");//<<<<<<<<<<<<<<<<<<<<<<RED BACKGROUND
-    //iterates trough all the files to find master and client files
-    /*
-    for (int i = 0; i < num_of_sdirs; i++)
-    {
-        if (reDirNotFound.Matches(sourceDirs[i]))
-        {
-            //sdir_lbx->GetItem(i)->SetBackgroundColour(wxColour(255, 0, 0));
-        }
-    }
-    */
-
     sourceSizer->Add(sourceDirlistbox, 0, wxEXPAND | wxALL, 5);
     // ------------------------------------------------------------------------
     // Action buttons for Source dirs
@@ -257,6 +244,7 @@ MainWindow::MainWindow(wxWindow* parent,
         if (!wxDirExists(tdirNameStr)) {
             nonexistingtdirs++; 
             tdir_lbx->Append(tdirNameStr + "<<<<<<<<<WARNING! DIRECTORY NOT FOUND.");
+            tdir_lbx->SetBackgroundColour(wxT("red"));
         }
         else {
             tdir_lbx->Append(tdirNameStr);
@@ -401,6 +389,7 @@ void MainWindow::OnClearSourceDirs(wxCommandEvent& event)
         scf_lb->Clear();
         num_of_sdirs = 0;
         nonexistingsdirs = 0;
+        sdir_lbx->SetBackgroundColour(wxT("white"));
         //Clears the source directories names in the text file
         stxtFile.Open();
         stxtFile.Clear();
@@ -417,6 +406,7 @@ void MainWindow::OnDeleteSourceDir(wxCommandEvent& event)
     if (sel != -1) {
         wxString dir = sdir_lbx->GetString(sel);
         if (!wxDirExists(dir)) { nonexistingsdirs--; }
+        if (nonexistingsdirs == 0) { sdir_lbx->SetBackgroundColour(wxT("white")); }
         sdir_lbx->Delete(sel);
         num_of_sdirs--;
     }
@@ -566,6 +556,7 @@ void MainWindow::OnClearTargetDirs(wxCommandEvent& event)
         tmf_lb->Clear();
         num_of_tdirs = 0;
         nonexistingtdirs = 0;
+        tdir_lbx->SetBackgroundColour(wxT("white"));
         //Clears the Target directories names in the text file
         ttxtFile.Open();
         ttxtFile.Clear();
@@ -582,6 +573,7 @@ void MainWindow::OnDeleteTargetDir(wxCommandEvent& event)
     if (sel != -1) {
         wxString dir = tdir_lbx->GetString(sel);
         if (!wxDirExists(dir)) { nonexistingtdirs--; }
+        if (nonexistingtdirs == 0) { tdir_lbx->SetBackgroundColour(wxT("white")); }
         tdir_lbx->Delete(sel);
         num_of_tdirs--;
     }
@@ -713,11 +705,34 @@ void MainWindow::OnSync(wxCommandEvent& event)
                 //that file with a copy of the master file but with the client file name
                 if (masterNameTemp == clientNameTemp && masterExtension == clientExtension)
                 {
-                    flag++;
-                    syncFiles.Add(clientFiles[n]);
-                    if (wxCopyFile(masterFiles[l], clientFiles[n]) != 0)
-                        perror("Error moving file");
-                    PushStatusText(_("Syncing!"));
+                    time_t mfiletimestamp = wxFileModificationTime(masterFiles[l]);
+                    time_t cfiletimestamp = wxFileModificationTime(clientFiles[n]);
+                    if (cfiletimestamp < mfiletimestamp) {
+                        flag++;
+                        syncFiles.Add(clientFiles[n]);
+                        if (wxCopyFile(masterFiles[l], clientFiles[n]) != 0)
+                            perror("Error moving file");
+                        PushStatusText(_("Syncing!"));
+                    }
+                    else {
+                        int dialog_return_value = wxID_NO;
+                        wxMessageDialog* dial = new wxMessageDialog(NULL,
+                            _("The file\n" + clientFiles[n] + "\nHas been modified more recently than the master file.\nWould you like to overwrite it?"),
+                            _("Sync Files"), wxYES_NO | wxICON_WARNING);
+                        dialog_return_value = dial->ShowModal();
+                        switch (dialog_return_value) // Use switch, scales to more buttons later
+                        {
+                        case wxID_YES:
+                            flag++;
+                            syncFiles.Add(clientFiles[n]);
+                            if (wxCopyFile(masterFiles[l], clientFiles[n]) != 0)
+                                perror("Error moving file");
+                            PushStatusText(_("Syncing!"));
+                        case wxID_NO:
+                            break;
+                        default:;
+                        };
+                    }
                 }
             }
         }
@@ -753,6 +768,7 @@ void MainWindow::onUpdateSearchSourceButton(wxUpdateUIEvent& event)
     if (nonexistingsdirs == 0)
     {
         event.Enable(true);
+        sdir_lbx->SetBackgroundColour(wxT("white"));
     }
     else {
         event.Enable(false);
@@ -763,6 +779,7 @@ void MainWindow::onUpdateTargetButton(wxUpdateUIEvent& event)
     if (nonexistingtdirs == 0)
     {
         event.Enable(true);
+        tdir_lbx->SetBackgroundColour(wxT("white"));
     }
     else {
         event.Enable(false);
