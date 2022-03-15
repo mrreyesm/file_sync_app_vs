@@ -35,6 +35,17 @@ private:
     void OnClearTargetDirs(wxCommandEvent& event);
     void OnSearchTargetDirs(wxCommandEvent& event);
     void OnSync(wxCommandEvent& event);
+    void onUpdateSyncButton(wxUpdateUIEvent& event);
+    void onUpdateSearchSourceButton(wxUpdateUIEvent& event);
+    void onUpdateTargetButton(wxUpdateUIEvent& event);
+    void OnSourceListBoxDirDClick(wxCommandEvent& event);
+    void OnTargetListBoxDirDClick(wxCommandEvent& event);
+    void OnMasterListBoxFileDClick(wxCommandEvent& event);
+    void OnClientListBoxFileDClick(wxCommandEvent& event);
+    void OnSourceClientListBoxFileDClick(wxCommandEvent& event);
+    void OnTargetMasterListBoxFileDClick(wxCommandEvent& event);
+    void OnMFDuplicatesListBoxFileDClick(wxCommandEvent& event);
+    void OnSyncListBoxFileDClick(wxCommandEvent& event);
     //Declaration of objects
     //---------MENU-------
     wxMenuBar* menuBar;
@@ -88,6 +99,7 @@ private:
     wxListBox* cf_lb;
     wxBoxSizer* mcFilesbtnsVbox;
     wxButton* mc_syncb;
+    wxButton* exitb;
     wxBoxSizer* targetMFilesSizer;
     wxStaticText* targetMFilesLabel;
     wxListBox* targetMFilesBox;
@@ -96,4 +108,6 @@ private:
     wxStaticText* syncedFilesLabel;
     wxListBox* sf_lb;
     wxListBox* syncedFilesBox;
+
+    DECLARE_EVENT_TABLE()
 };

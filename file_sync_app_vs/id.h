@@ -29,6 +29,7 @@ namespace window
         ID_IDFILE = 20,
         ID_IDADD = 21,
         ID_MASTERCHBOX = 22,
-        ID_CLIENTCHBOX = 23
+        ID_CLIENTCHBOX = 23,
+        ID_EXITAPP = 49
     };
 }

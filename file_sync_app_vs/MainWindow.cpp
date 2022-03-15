@@ -14,6 +14,31 @@
 #include <wx/dir.h>
 #include <wx/regex.h>
 #include <wx/textfile.h>
+//Event table for static events
+BEGIN_EVENT_TABLE(MainWindow, wxFrame)
+EVT_UPDATE_UI(window::id::ID_SYNC,
+    MainWindow::onUpdateSyncButton)
+EVT_UPDATE_UI(window::id::ID_S_SEARCH,
+    MainWindow::onUpdateSearchSourceButton)
+EVT_UPDATE_UI(window::id::ID_T_SEARCH,
+    MainWindow::onUpdateTargetButton)
+EVT_LISTBOX_DCLICK(window::id::ID_S_LISTBOX,
+    MainWindow::OnSourceListBoxDirDClick)
+EVT_LISTBOX_DCLICK(window::id::ID_T_LISTBOX,
+    MainWindow::OnTargetListBoxDirDClick)
+EVT_LISTBOX_DCLICK(window::id::ID_MF_LISTBOX,
+    MainWindow::OnMasterListBoxFileDClick)
+EVT_LISTBOX_DCLICK(window::id::ID_CF_LISTBOX,
+    MainWindow::OnClientListBoxFileDClick)
+EVT_LISTBOX_DCLICK(window::id::ID_SCF_LISTBOX,
+    MainWindow::OnSourceClientListBoxFileDClick)
+EVT_LISTBOX_DCLICK(window::id::ID_TMF_LISTBOX,
+    MainWindow::OnTargetMasterListBoxFileDClick)
+EVT_LISTBOX_DCLICK(window::id::ID_MDF_LISTBOX,
+    MainWindow::OnMFDuplicatesListBoxFileDClick)
+EVT_LISTBOX_DCLICK(window::id::ID_SF_LISTBOX,
+    MainWindow::OnSyncListBoxFileDClick)
+END_EVENT_TABLE()
 // ----------------------------------------------------------------------------
 // Global variables
 // ----------------------------------------------------------------------------
@@ -23,10 +48,16 @@ wxTextFile stxtFile(_T("sourcedirs.txt"));
 wxTextFile ttxtFile(_T("targetdirs.txt"));
 int num_of_sdirs = 0;
 int num_of_tdirs = 0;
+int nonexistingsdirs = 0;
+int nonexistingtdirs = 0;
 //These global arrays keeps track of the master/client files 
 //that are going to be synced
+wxArrayString sourceDirs;
+wxArrayString targetDirs;
 wxArrayString masterFiles;
 wxArrayString clientFiles;
+wxArrayString allmasterFiles;
+wxArrayString allclientFiles;
 wxArrayString syncFiles;
 // ----------------------------------------------------------------------------
 // Main Window
@@ -102,15 +133,26 @@ MainWindow::MainWindow(wxWindow* parent,
     sourceLabel->SetMinSize(wxSize(70, sourceLabel->GetMinSize().y));
     sourceSizer->Add(sourceLabel, 0, wxLEFT, 10);
     sdir_lbx = sourceDirlistbox = new wxListBox(leftPanel,
-        window::id::ID_S_LISTBOX,wxDefaultPosition, wxSize(450, 110));
+        window::id::ID_S_LISTBOX,wxDefaultPosition, wxSize(450, 110)); //wxLB_OWNERDRAW
     //Fill listbox with source directories from a text file
     wxTextFile stxtFile(_T("sourcedirs.txt"));
     stxtFile.Open();
     std::string sdirNameStr;
     for (sdirNameStr = stxtFile.GetFirstLine(); !stxtFile.Eof();
         sdirNameStr = stxtFile.GetNextLine()){
-        sdir_lbx->Append(sdirNameStr);
+        if (!wxDirExists(sdirNameStr)) { 
+            nonexistingsdirs++; 
+            sdir_lbx->Append(sdirNameStr + "<<<<<<<<<WARNING! DIRECTORY NOT FOUND.");
+            sdir_lbx->SetBackgroundColour(wxT("red"));
+        }
+        else {
+            sdir_lbx->Append(sdirNameStr);
+        }
         num_of_sdirs++;
+    }
+    if (nonexistingsdirs > 0) {
+        wxMessageBox("One or more of the registered source directories has not been found.",
+            "Directory not found", wxOK | wxICON_WARNING);
     }
     stxtFile.Close();
     sourceSizer->Add(sourceDirlistbox, 0, wxEXPAND | wxALL, 5);
@@ -199,10 +241,22 @@ MainWindow::MainWindow(wxWindow* parent,
     std::string tdirNameStr;
     for (tdirNameStr = ttxtFile.GetFirstLine(); !ttxtFile.Eof();
         tdirNameStr = ttxtFile.GetNextLine()){
-        tdir_lbx->Append(tdirNameStr);
+        if (!wxDirExists(tdirNameStr)) {
+            nonexistingtdirs++; 
+            tdir_lbx->Append(tdirNameStr + "<<<<<<<<<WARNING! DIRECTORY NOT FOUND.");
+            tdir_lbx->SetBackgroundColour(wxT("red"));
+        }
+        else {
+            tdir_lbx->Append(tdirNameStr);
+        }       
         num_of_tdirs++;
     }
+    if (nonexistingtdirs > 0) {
+        wxMessageBox("One or more of the registered target directories has not been found.",
+            "Directory not found", wxOK | wxICON_WARNING);
+    }
     ttxtFile.Close();
+    //<<<<<<<<<<<<<<<<<<<<<<RED BACKGROUND
     targetSizer->Add(targetDirlistbox, 0, wxEXPAND | wxALL, 5);
     // ------------------------------------------------------------------------
     // Action buttons for Target dirs
@@ -248,12 +302,15 @@ MainWindow::MainWindow(wxWindow* parent,
     //Create vertical box that contains the action buttons
     mcFilesbtnsVbox = new wxBoxSizer(wxVERTICAL);
     mc_syncb = new wxButton(rightPanel, window::id::ID_SYNC, wxT("SYNC"));
+    exitb = new wxButton(rightPanel, window::id::ID_EXITAPP, wxT("EXIT"));
     //Assigns actions to those buttons
     Connect(window::id::ID_SYNC, wxEVT_COMMAND_BUTTON_CLICKED,
         wxCommandEventHandler(MainWindow::OnSync));
+    Bind(wxEVT_COMMAND_BUTTON_CLICKED, [=](wxCommandEvent&) { Close(true); }, window::id::ID_EXITAPP);
     //Add buttons to the right panel
     mcFilesbtnsVbox->Add(-1, 5);
     mcFilesbtnsVbox->Add(mc_syncb);
+    mcFilesbtnsVbox->Add(exitb);
     clientFilesSizer->Add(mcFilesbtnsVbox, 2, wxEXPAND | wxRIGHT, 10);
     rightPanelSizer->Add(-1, 10);
     rightPanelSizer->Add(clientFilesSizer, 0, wxEXPAND | wxALL, 5);
@@ -318,17 +375,38 @@ void MainWindow::OnAddSourceDir(wxCommandEvent& event)
 //Clears all listboxes in the left panel
 void MainWindow::OnClearSourceDirs(wxCommandEvent& event)
 {
-    sdir_lbx->Clear();
-    mf_lb->Clear();
-    mdf_lb->Clear();
-    scf_lb->Clear();
-    num_of_sdirs = 0;
+    int dialog_return_value = wxID_NO;
+    wxMessageDialog* dial = new wxMessageDialog(NULL,
+        _("Are you sure you want to remove from the list all the current Source directories"),
+        _("Remove Source Directories"), wxYES_NO | wxICON_WARNING);
+    dialog_return_value = dial->ShowModal();
+    switch (dialog_return_value) // Use switch, scales to more buttons later
+    {
+    case wxID_YES:
+        sdir_lbx->Clear();
+        mf_lb->Clear();
+        mdf_lb->Clear();
+        scf_lb->Clear();
+        num_of_sdirs = 0;
+        nonexistingsdirs = 0;
+        sdir_lbx->SetBackgroundColour(wxT("white"));
+        //Clears the source directories names in the text file
+        stxtFile.Open();
+        stxtFile.Clear();
+        stxtFile.Close();
+    case wxID_NO:
+        break;
+    default:;
+    };
 }
 //Removes a selected directory from the Source listbox
 void MainWindow::OnDeleteSourceDir(wxCommandEvent& event)
 {
     int sel = sdir_lbx->GetSelection();
     if (sel != -1) {
+        wxString dir = sdir_lbx->GetString(sel);
+        if (!wxDirExists(dir)) { nonexistingsdirs--; }
+        if (nonexistingsdirs == 0) { sdir_lbx->SetBackgroundColour(wxT("white")); }
         sdir_lbx->Delete(sel);
         num_of_sdirs--;
     }
@@ -362,11 +440,12 @@ void MainWindow::OnSearchSourceDirs(wxCommandEvent& event)
         wxArrayString filteredDirList;
         wxArrayString clientDirList;
         //regular expressions to spot master and client files
-        wxRegEx reMaster(".*IMC.*");
+        wxRegEx reMaster(".*IDM.*");
         wxRegEx reClient(".*IDC.*");
         //iterates trough all the files to find master and client files
         for (int i = 0; i < dirList.GetCount(); i++)
         {
+            allmasterFiles.Add(dirList[i]);
             if (reMaster.Matches(dirList[i]))
             {
                 wxString temp;
@@ -387,14 +466,57 @@ void MainWindow::OnSearchSourceDirs(wxCommandEvent& event)
         scf_lb->Append(clientDirList);
     }
     //Look for duplicate files
+    //Declaration of some variables to store characteristics of each file
+    wxString ltemp;
+    wxString wxltmp;
+    std::string ltmp;
+    std::string lt;
+    std::string lidhash;
+    std::string lExtension;
+    int lfilelastindex = 0;
+    int lidhashindex = 0;
+    int lend = 0;
+
+    wxString mtemp;
+    wxString wxmtmp;
+    std::string mtmp;
+    std::string mt;
+    std::string midhash;
+    std::string mExtension;
+    int mfilelastindex = 0;
+    int midhashindex = 0;
+    int mend = 0;
     for (int l = 0; l < items; l++)
     {
         for (int m = l+1; m < items; m++)
         {
-            if (mf_lb->GetString(l) == mf_lb->GetString(m))
+            wxltmp = mf_lb->GetString(l);
+            ltmp = std::string(wxltmp.mb_str());
+            ltemp = wxFileNameFromPath(ltmp);
+            lt = ltemp.ToStdString();
+            lend = lt.size();
+            lfilelastindex = lt.find_last_of(".");
+            lidhashindex = lt.find_last_of("-");
+            lidhash = lt.substr(lidhashindex, lfilelastindex);
+            lExtension = lt.substr(lfilelastindex, lend);
+                
+            wxmtmp = mf_lb->GetString(m);
+            mtmp = std::string(wxmtmp.mb_str());
+            mtemp = wxFileNameFromPath(mtmp);
+            mt = mtemp.ToStdString();
+            mend = mt.size();
+            mfilelastindex = mt.find_last_of(".");
+            midhashindex = mt.find_last_of("-");
+            midhash = mt.substr(midhashindex, mfilelastindex);
+            mExtension = mt.substr(mfilelastindex, mend);
+            //Compares the HASHID and the extension of each file to look
+            //for duplicate files
+            if (lidhash == midhash && lExtension == mExtension)
             {
                 mdf_lb->Append(mf_lb->GetString(l));
-            }
+                wxMessageBox("There is a duplicated Master file. Remove it or rename it\nto continue with the Syncronization",
+                    "Duplicate Master file", wxOK | wxICON_WARNING);
+            }         
         }
     }
     //Saves the Source directories names into a text file
@@ -421,16 +543,37 @@ void MainWindow::OnAddTargetDir(wxCommandEvent& event)
 //Clears all listboxes in the right panel
 void MainWindow::OnClearTargetDirs(wxCommandEvent& event)
 {
-    tdir_lbx->Clear();
-    cf_lb->Clear();
-    tmf_lb->Clear();
-    num_of_tdirs = 0;
+    int dialog_return_value = wxID_NO;
+    wxMessageDialog* dial = new wxMessageDialog(NULL,
+        _("Are you sure you want to remove from the list all the current Target directories"),
+        _("Remove Target Directories"), wxYES_NO | wxICON_WARNING);
+    dialog_return_value = dial->ShowModal();
+    switch (dialog_return_value) // Use switch, scales to more buttons later
+    {
+    case wxID_YES:
+        tdir_lbx->Clear();
+        cf_lb->Clear();
+        tmf_lb->Clear();
+        num_of_tdirs = 0;
+        nonexistingtdirs = 0;
+        tdir_lbx->SetBackgroundColour(wxT("white"));
+        //Clears the Target directories names in the text file
+        ttxtFile.Open();
+        ttxtFile.Clear();
+        ttxtFile.Close();
+    case wxID_NO:
+        break;
+    default:;
+    };
 }
 //Removes a selected directory from the Target listbox
 void MainWindow::OnDeleteTargetDir(wxCommandEvent& event)
 {
     int sel = tdir_lbx->GetSelection();
     if (sel != -1) {
+        wxString dir = tdir_lbx->GetString(sel);
+        if (!wxDirExists(dir)) { nonexistingtdirs--; }
+        if (nonexistingtdirs == 0) { tdir_lbx->SetBackgroundColour(wxT("white")); }
         tdir_lbx->Delete(sel);
         num_of_tdirs--;
     }
@@ -461,11 +604,12 @@ void MainWindow::OnSearchTargetDirs(wxCommandEvent& event)
         wxArrayString filteredDirList;
         wxArrayString masterDirList;
         //regular expressions to spot master and client files
-        wxRegEx reMaster(".*IMC.*");
+        wxRegEx reMaster(".*IDM.*");
         wxRegEx reClient(".*IDC.*");
         //iterates trough all the files to find master and client files
         for (int i = 0; i < dirList.GetCount(); i++)
         {
+            allclientFiles.Add(dirList[i]);
             if (reClient.Matches(dirList[i]))
             {
                 wxString temp;
@@ -514,6 +658,7 @@ void MainWindow::OnSync(wxCommandEvent& event)
         std::string m;
         int mend = 0;
         int masterlastindex = 0;
+        int masteridhashindex = 0;
         int masteridindex = 0;
         wxString clienttemp;
         std::string clientNameTemp;
@@ -523,6 +668,7 @@ void MainWindow::OnSync(wxCommandEvent& event)
         int cend = 0;
         int clientlastindex = 0;
         int clientidindex = 0;
+        int clientidhashindex = 0;
         //clears synced files listbox and array
         syncFiles.clear();
         sf_lb->Clear();
@@ -537,7 +683,8 @@ void MainWindow::OnSync(wxCommandEvent& event)
             mend = m.size();
             masterlastindex = m.find_last_of(".");
             masteridindex = m.find_last_of("_");
-            masterNameTemp = m.substr(0, masteridindex);
+            masteridhashindex = m.find_last_of("-");
+            masterNameTemp = m.substr(masteridhashindex, masterlastindex);
             masterExtension = m.substr(masterlastindex, mend);
             //iterates through the client files and compares them to the current
             //master file
@@ -549,7 +696,8 @@ void MainWindow::OnSync(wxCommandEvent& event)
                 cend = c.size();
                 clientlastindex = c.find_last_of(".");
                 clientidindex = c.find_last_of("_");
-                clientNameTemp = c.substr(0, clientidindex);
+                clientidhashindex = c.find_last_of("-");
+                clientNameTemp = c.substr(clientidhashindex, clientlastindex);
                 clientExtension = c.substr(clientlastindex, cend);
                 clientIdTemp = c.substr(clientidindex, clientlastindex);
                 //if the name and extension of a master file and a client file match
@@ -557,11 +705,34 @@ void MainWindow::OnSync(wxCommandEvent& event)
                 //that file with a copy of the master file but with the client file name
                 if (masterNameTemp == clientNameTemp && masterExtension == clientExtension)
                 {
-                    flag++;
-                    syncFiles.Add(clientFiles[n]);
-                    if (wxCopyFile(masterFiles[l], clientFiles[n]) != 0)
-                        perror("Error moving file");
-                    PushStatusText(_("Syncing!"));
+                    time_t mfiletimestamp = wxFileModificationTime(masterFiles[l]);
+                    time_t cfiletimestamp = wxFileModificationTime(clientFiles[n]);
+                    if (cfiletimestamp < mfiletimestamp) {
+                        flag++;
+                        syncFiles.Add(clientFiles[n]);
+                        if (wxCopyFile(masterFiles[l], clientFiles[n]) != 0)
+                            perror("Error moving file");
+                        PushStatusText(_("Syncing!"));
+                    }
+                    else {
+                        int dialog_return_value = wxID_NO;
+                        wxMessageDialog* dial = new wxMessageDialog(NULL,
+                            _("The file\n" + clientFiles[n] + "\nHas been modified more recently than the master file.\nWould you like to overwrite it?"),
+                            _("Sync Files"), wxYES_NO | wxICON_WARNING);
+                        dialog_return_value = dial->ShowModal();
+                        switch (dialog_return_value) // Use switch, scales to more buttons later
+                        {
+                        case wxID_YES:
+                            flag++;
+                            syncFiles.Add(clientFiles[n]);
+                            if (wxCopyFile(masterFiles[l], clientFiles[n]) != 0)
+                                perror("Error moving file");
+                            PushStatusText(_("Syncing!"));
+                        case wxID_NO:
+                            break;
+                        default:;
+                        };
+                    }
                 }
             }
         }
@@ -582,5 +753,243 @@ void MainWindow::OnSync(wxCommandEvent& event)
         wxMessageBox("Please make sure that there are files in the Master files box and in the Client files box and that there are no duplicated Master Files.",
             "Warning", wxOK | wxICON_WARNING);
     }  
+}
+void MainWindow::onUpdateSyncButton(wxUpdateUIEvent& event)
+{
+    event.Enable(false);
+    if (mdf_lb->IsEmpty() && !mf_lb->IsEmpty() && !cf_lb->IsEmpty())
+    {
+     event.Enable(true);
+    }
+}
+void MainWindow::onUpdateSearchSourceButton(wxUpdateUIEvent& event)
+{
+    if (nonexistingsdirs == 0)
+    {
+        event.Enable(true);
+        sdir_lbx->SetBackgroundColour(wxT("white"));
+    }
+    else {
+        event.Enable(false);
+    }
+}
+void MainWindow::onUpdateTargetButton(wxUpdateUIEvent& event)
+{
+    if (nonexistingtdirs == 0)
+    {
+        event.Enable(true);
+        tdir_lbx->SetBackgroundColour(wxT("white"));
+    }
+    else {
+        event.Enable(false);
+    }
+}
+//this function opens a file explorer with the selected source dir
+void MainWindow::OnSourceListBoxDirDClick(wxCommandEvent& event)
+{
+    int sel = sdir_lbx->GetSelection();
+    wxString pathtmp = sdir_lbx->GetString(sel);
+    std::string path = std::string(pathtmp.mb_str());
+    if (wxDirExists(path)) {
+        wxString command = "explorer " + pathtmp;
+        wxExecute(command, wxEXEC_ASYNC, NULL);
+    }
+    else {
+        wxMessageBox("The selected directory does not exist.",
+            "Warning", wxOK | wxICON_WARNING);
+    }
+
+}
+//this function opens a file explorer with the selected target dir
+void MainWindow::OnTargetListBoxDirDClick(wxCommandEvent& event)
+{
+    int sel = tdir_lbx->GetSelection();
+    wxString pathtmp = tdir_lbx->GetString(sel);
+    std::string path = std::string(pathtmp.mb_str());
+    if (wxDirExists(path)) {
+        wxString command = "explorer " + pathtmp;
+        wxExecute(command, wxEXEC_ASYNC, NULL);
+    }
+    else {
+        wxMessageBox("The selected directory does not exist.",
+            "Warning", wxOK | wxICON_WARNING);
+    }
+}
+//this function opens a file explorer with the selected file
+//and it can also open the file if requested
+void MainWindow::OnMasterListBoxFileDClick(wxCommandEvent& event)
+{
+    int sel = mf_lb->GetSelection();
+    wxString selectedfile = mf_lb->GetString(sel);
+    for (int i = 0; i < masterFiles.Count(); i++) {
+        if (selectedfile == wxFileNameFromPath(masterFiles[i])) {
+            wxString completepath = masterFiles[i];
+            wxString pathtmp = wxPathOnly(masterFiles[i]);
+            wxString opendir = "explorer " + pathtmp;
+            wxString openfile = "explorer " + completepath;
+            wxExecute(opendir, wxEXEC_ASYNC, NULL);
+
+            int dialog_return_value = wxID_NO;
+            wxMessageDialog* dial = new wxMessageDialog(NULL,
+                _("Directory opened.\nWould you like to open the file?"),
+                _("Master Files"), wxYES_NO | wxICON_QUESTION);
+            dialog_return_value = dial->ShowModal();
+            switch (dialog_return_value) // Use switch, scales to more buttons later
+            {
+            case wxID_YES:
+                wxExecute(openfile, wxEXEC_ASYNC, NULL);
+            case wxID_NO:
+                break;
+            default:;
+            };
+        }
+    }
+}
+//this function opens a file explorer with the selected file
+//and it can also open the file if requested
+void MainWindow::OnClientListBoxFileDClick(wxCommandEvent& event)///////////////////
+{
+    int sel = cf_lb->GetSelection();
+    wxString selectedfile = cf_lb->GetString(sel);
+    for (int i = 0; i < clientFiles.Count(); i++) {
+        if (selectedfile == wxFileNameFromPath(clientFiles[i])) {
+            wxString completepath = clientFiles[i];
+            wxString pathtmp = wxPathOnly(clientFiles[i]);
+            wxString opendir = "explorer " + pathtmp;
+            wxString openfile = "explorer " + completepath;
+            wxExecute(opendir, wxEXEC_ASYNC, NULL);
+
+            int dialog_return_value = wxID_NO;
+            wxMessageDialog* dial = new wxMessageDialog(NULL,
+                _("Directory opened.\nWould you like to open the file?"),
+                _("Client Files"), wxYES_NO | wxICON_QUESTION);
+            dialog_return_value = dial->ShowModal();
+            switch (dialog_return_value) // Use switch, scales to more buttons later
+            {
+            case wxID_YES:
+                wxExecute(openfile, wxEXEC_ASYNC, NULL);
+            case wxID_NO:
+                break;
+            default:;
+            };
+        }
+    }
+}
+//this function opens a file explorer with the selected file
+//and it can also open the file if requested
+void MainWindow::OnSourceClientListBoxFileDClick(wxCommandEvent& event)//////////////////
+{
+    int sel = scf_lb->GetSelection();
+    wxString selectedfile = scf_lb->GetString(sel);
+    for (int i = 0; i < allmasterFiles.Count(); i++) {
+        if (selectedfile == wxFileNameFromPath(allmasterFiles[i])) {
+            wxString completepath = allmasterFiles[i];
+            wxString pathtmp = wxPathOnly(allmasterFiles[i]);
+            wxString opendir = "explorer " + pathtmp;
+            wxString openfile = "explorer " + completepath;
+            wxExecute(opendir, wxEXEC_ASYNC, NULL);
+
+            int dialog_return_value = wxID_NO;
+            wxMessageDialog* dial = new wxMessageDialog(NULL,
+                _("Directory opened.\nWould you like to open the file?"),
+                _("Client files in Source directories"), wxYES_NO | wxICON_QUESTION);
+            dialog_return_value = dial->ShowModal();
+            switch (dialog_return_value) // Use switch, scales to more buttons later
+            {
+            case wxID_YES:
+                wxExecute(openfile, wxEXEC_ASYNC, NULL);
+            case wxID_NO:
+                break;
+            default:;
+            };
+        }
+    }
+}
+//this function opens a file explorer with the selected file
+//and it can also open the file if requested
+void MainWindow::OnTargetMasterListBoxFileDClick(wxCommandEvent& event)///////////
+{
+    int sel = tmf_lb->GetSelection();
+    wxString selectedfile = tmf_lb->GetString(sel);
+    for (int i = 0; i < allclientFiles.Count(); i++) {
+        if (selectedfile == wxFileNameFromPath(allclientFiles[i])) {
+            wxString completepath = allclientFiles[i];
+            wxString pathtmp = wxPathOnly(allclientFiles[i]);
+            wxString opendir = "explorer " + pathtmp;
+            wxString openfile = "explorer " + completepath;
+            wxExecute(opendir, wxEXEC_ASYNC, NULL);
+
+            int dialog_return_value = wxID_NO;
+            wxMessageDialog* dial = new wxMessageDialog(NULL,
+                _("Directory opened.\nWould you like to open the file?"),
+                _("Master Files in Target directories"), wxYES_NO | wxICON_QUESTION);
+            dialog_return_value = dial->ShowModal();
+            switch (dialog_return_value) // Use switch, scales to more buttons later
+            {
+            case wxID_YES:
+                wxExecute(openfile, wxEXEC_ASYNC, NULL);
+            case wxID_NO:
+                break;
+            default:;
+            };
+        }
+    }
+}
+//this function opens a file explorer with the selected file
+//and it can also open the file if requested
+void MainWindow::OnMFDuplicatesListBoxFileDClick(wxCommandEvent& event)//////////////
+{
+    int sel = mdf_lb->GetSelection();
+    wxString selectedfile = mdf_lb->GetString(sel);
+    for (int i = 0; i < masterFiles.Count(); i++) {
+        if (selectedfile == wxFileNameFromPath(masterFiles[i])) {
+            wxString completepath = masterFiles[i];
+            wxString pathtmp = wxPathOnly(masterFiles[i]);
+            wxString opendir = "explorer " + pathtmp;
+            wxString openfile = "explorer " + completepath;
+            wxExecute(opendir, wxEXEC_ASYNC, NULL);
+
+            int dialog_return_value = wxID_NO;
+            wxMessageDialog* dial = new wxMessageDialog(NULL,
+                _("Directory opened.\nWould you like to open the file?"),
+                _("Master Duplicated Files"), wxYES_NO | wxICON_QUESTION);
+            dialog_return_value = dial->ShowModal();
+            switch (dialog_return_value) // Use switch, scales to more buttons later
+            {
+            case wxID_YES:
+                wxExecute(openfile, wxEXEC_ASYNC, NULL);
+            case wxID_NO:
+                break;
+            default:;
+            };
+        }
+    }
+}
+//this function opens a file explorer with the selected file
+//and it can also open the file if requested
+void MainWindow::OnSyncListBoxFileDClick(wxCommandEvent& event)
+{
+    int sel = sf_lb->GetSelection();
+    wxString filepath = sf_lb->GetString(sel);
+    std::string file = std::string(filepath.mb_str());
+    wxString pathtmp = wxPathOnly(sf_lb->GetString(sel));
+    std::string path = std::string(pathtmp.mb_str());
+    wxString opendir = "explorer " + path;
+    wxString openfile = "explorer " + file;
+    wxExecute(opendir, wxEXEC_ASYNC, NULL);
+
+    int dialog_return_value = wxID_NO;
+    wxMessageDialog* dial = new wxMessageDialog(NULL,
+        _("Directory opened.\nWould you like to open the file?"),
+        _("Synced Files"), wxYES_NO | wxICON_QUESTION);
+    dialog_return_value = dial->ShowModal();
+    switch (dialog_return_value) // Use switch, scales to more buttons later
+    {
+    case wxID_YES:
+        wxExecute(openfile, wxEXEC_ASYNC, NULL);
+    case wxID_NO:
+        break;
+    default:;
+    };  
 }
 MainWindow::~MainWindow() {}

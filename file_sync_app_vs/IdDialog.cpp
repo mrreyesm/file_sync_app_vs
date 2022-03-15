@@ -12,7 +12,8 @@
 #include <wx/valtext.h>
 #include <ctime>
 #include <iostream>
-
+#include "md5.h"
+#include <algorithm>
 // ----------------------------------------------------------------------------
 // Global variables
 // ----------------------------------------------------------------------------
@@ -90,6 +91,24 @@ IdDialog::IdDialog(wxWindow* parent, wxWindowID id,
     SetMinSize(wxSize(1020, 100)); //min size of the dialog
     Fit();
 }
+//this function iterates trough the string and capitalizes lower case chars
+std::string capitalizeString(std::string s) {
+    std::string v;
+    std::string x;
+    for (int i = 0; i < s.size(); i++) {
+        if (isalpha(s[i])) {
+            if (isupper(s[i])) {
+                v = v + s[i];
+            }
+            else {
+                x = toupper(s[i]);
+                v = v + x;
+            }
+        }
+        else v = v + s[i];
+    }
+    return v;
+}
 //Opens a dialog window to select a file and gets its name, extension and ID
 void IdDialog::OnSelectFile(wxCommandEvent& event)
 {
@@ -108,16 +127,11 @@ void IdDialog::OnSelectFile(wxCommandEvent& event)
     }
 }
 //Creates the ID of the file and renames the file
-//It IDs the gile based on the date and time, including seconds
-//so that it is impossible to have 2 same IDs
-//it can also include a random number but it will get too long
+//It IDs the File based on the date and time, including seconds
+//and a hash function so that it is impossible to have 2 same IDs
 void IdDialog::OnIdFile(wxCommandEvent& event)
 {
     if(fileNameTemp != ""){
-        //creates random number
-        int max = 1000;
-        int min = 9999;
-        int randNum = rand() % (max - min + 1) + min;
         //gets localtime and separates it into different variables
         std::time_t t = std::time(0);   // get time now
         std::tm* now = std::localtime(&t);
@@ -127,25 +141,47 @@ void IdDialog::OnIdFile(wxCommandEvent& event)
         std::string hours = std::to_string(now->tm_hour);
         std::string minutes = std::to_string(now->tm_min);
         std::string seconds = std::to_string(now->tm_sec);
-        std::string randnumber = std::to_string(randNum);
-        //hash id?    
+        //hash id
+        //MD5 needs a string and to make unique IDs the datetime as string is given
+        std::string datetime = year + month + day + hours + minutes + seconds;
+        std::string md5hash = md5(datetime);
+        std::string md5hash7 = md5hash.substr(0, 7);
+        std::string md5hash7u = capitalizeString(md5hash7);
         //sets filetype based on the checkboxes
         std::string filetype;
         if (master == 1) {
-            filetype = "_IMC-";
+            filetype = "_IDM-";
         }
         else {
             filetype = "_IDC-";
         }
         //Concatenates everything and renames the file.
-        std::string date = year+month+day;
-        std::string time = hours+minutes+seconds;
-        //std::string finalFileName = fileNameTemp + filetype + date + '-' + time + '-' + randnumber + extension;
-        std::string finalFileName = fileNameTemp + filetype + date + '-' + time + extension;
+        //std::string finalFileName = fileNameTemp + filetype + date + '-' + time + extension;
+        std::string finalFileName = fileNameTemp + filetype + md5hash7u + extension;
         wxString tempName(finalFileName);
         idFiletxtCtrl->SetValue(wxFileNameFromPath(finalFileName));
         wxRenameFile(fileName, tempName);
+        md5hash7.clear();
+        wxMessageBox("The file has been renamed with a unique ID.",
+            "ID File", wxOK | wxICON_INFORMATION);
+        int dialog_return_value = wxID_NO;
+        wxMessageDialog* dial = new wxMessageDialog(NULL,
+            _("Would you like to ID another file?"),
+            _("ID File"), wxYES_NO | wxICON_QUESTION);
+        dialog_return_value = dial->ShowModal();
+        switch (dialog_return_value) // Use switch, scales to more buttons later
+        {
+        case wxID_YES:
+            filetxtCtrl->Clear();
+            idFiletxtCtrl->Clear();
+            break;
+        case wxID_NO:
+            Close();
+            break;
+        default:;
+        };
     }
+    
 }
 //Small function to select if the files is master or client
 void IdDialog::OnToggle(wxCommandEvent& WXUNUSED(event))
