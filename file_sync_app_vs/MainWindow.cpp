@@ -426,6 +426,10 @@ void MainWindow::OnDeleteSourceDir(wxCommandEvent& event)
         if (nonexistingsdirs == 0) { sdir_lbx->SetBackgroundColour(wxT("white")); }
         sdir_lbx->Delete(sel);
         num_of_sdirs--;
+        mf_lb->Clear();
+        mdf_lb->Clear();
+        scf_lb->Clear();
+        sf_lb->Clear();
     }
 }
 /*Searches for master files inside the directories in the Source listbox.
@@ -604,6 +608,9 @@ void MainWindow::OnDeleteTargetDir(wxCommandEvent& event)
         if (nonexistingtdirs == 0) { tdir_lbx->SetBackgroundColour(wxT("white")); }
         tdir_lbx->Delete(sel);
         num_of_tdirs--;
+        cf_lb->Clear();
+        tmf_lb->Clear();
+        sf_lb->Clear();
     }
 }
 /*Searches for client files inside the directories in the Target listbox.
