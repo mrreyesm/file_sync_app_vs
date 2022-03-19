@@ -95,6 +95,7 @@ MainWindow::MainWindow(wxWindow* parent,
     Bind(wxEVT_MENU, [=](wxCommandEvent&) { Close(true); }, wxID_EXIT);
     //Appends the created objects to the menu bar
     fileMenu->Append(quitItem);
+    //-----------------------------------
     menuBar->Append(fileMenu, _("&File"));
     menuBar->Append(menuHelp, _("&Help"));
     SetMenuBar(menuBar);
@@ -302,14 +303,19 @@ MainWindow::MainWindow(wxWindow* parent,
     //Create vertical box that contains the action buttons
     mcFilesbtnsVbox = new wxBoxSizer(wxVERTICAL);
     mc_syncb = new wxButton(rightPanel, window::id::ID_SYNC, wxT("SYNC"));
+    idFileb = new wxButton(rightPanel, window::id::ID_IDFILE5, wxT("ID a file"));
     exitb = new wxButton(rightPanel, window::id::ID_EXITAPP, wxT("EXIT"));
     //Assigns actions to those buttons
     Connect(window::id::ID_SYNC, wxEVT_COMMAND_BUTTON_CLICKED,
         wxCommandEventHandler(MainWindow::OnSync));
+    Connect(window::id::ID_IDFILE5, wxEVT_COMMAND_BUTTON_CLICKED,
+        wxCommandEventHandler(MainWindow::onIdFile));
     Bind(wxEVT_COMMAND_BUTTON_CLICKED, [=](wxCommandEvent&) { Close(true); }, window::id::ID_EXITAPP);
     //Add buttons to the right panel
     mcFilesbtnsVbox->Add(-1, 5);
     mcFilesbtnsVbox->Add(mc_syncb);
+    mcFilesbtnsVbox->Add(idFileb);
+    mcFilesbtnsVbox->Add(-1, 30);
     mcFilesbtnsVbox->Add(exitb);
     clientFilesSizer->Add(mcFilesbtnsVbox, 2, wxEXPAND | wxRIGHT, 10);
     rightPanelSizer->Add(-1, 10);
@@ -367,9 +373,20 @@ void MainWindow::OnAddSourceDir(wxCommandEvent& event)
 {
     wxDirDialog* openDirDialog = new wxDirDialog(this, "Choose Source directories");
     if (openDirDialog->ShowModal() == wxID_OK) {
+        int flag = 0;
         wxString DirName = openDirDialog->GetPath();
-        sdir_lbx->Append(DirName);
-        num_of_sdirs++;
+        for (int i = 0; i < num_of_sdirs; i++) {
+            wxString tempDirName = sdir_lbx->GetString(i);
+            if (tempDirName == DirName) {
+                wxMessageBox("This Directory is already in the list.",
+                    "Warning", wxOK | wxICON_WARNING);
+                flag = 1;
+            }
+        }
+        if (flag == 0) {
+            sdir_lbx->Append(DirName);
+            num_of_sdirs++;
+        }
     }
 }
 //Clears all listboxes in the left panel
@@ -535,9 +552,20 @@ void MainWindow::OnAddTargetDir(wxCommandEvent& event)
 {
     wxDirDialog* openDirDialog = new wxDirDialog(this, "Choose Target directories");
     if (openDirDialog->ShowModal() == wxID_OK) {
+        int flag = 0;
         wxString DirName = openDirDialog->GetPath();
-        tdir_lbx->Append(DirName);
-        num_of_tdirs++;
+        for (int i = 0; i < num_of_tdirs; i++) {           
+            wxString tempDirName = tdir_lbx->GetString(i);
+            if (tempDirName == DirName) {
+                wxMessageBox("This Directory is already in the list.",
+                    "Warning", wxOK | wxICON_WARNING);
+                flag = 1;
+            }
+        }
+        if (flag == 0) {
+            tdir_lbx->Append(DirName);
+            num_of_tdirs++;
+        }
     }
 }
 //Clears all listboxes in the right panel
@@ -826,22 +854,8 @@ void MainWindow::OnMasterListBoxFileDClick(wxCommandEvent& event)
             wxString completepath = masterFiles[i];
             wxString pathtmp = wxPathOnly(masterFiles[i]);
             wxString opendir = "explorer " + pathtmp;
-            wxString openfile = "explorer " + completepath;
-            wxExecute(opendir, wxEXEC_ASYNC, NULL);
-
-            int dialog_return_value = wxID_NO;
-            wxMessageDialog* dial = new wxMessageDialog(NULL,
-                _("Directory opened.\nWould you like to open the file?"),
-                _("Master Files"), wxYES_NO | wxICON_QUESTION);
-            dialog_return_value = dial->ShowModal();
-            switch (dialog_return_value) // Use switch, scales to more buttons later
-            {
-            case wxID_YES:
-                wxExecute(openfile, wxEXEC_ASYNC, NULL);
-            case wxID_NO:
-                break;
-            default:;
-            };
+            wxString openfile = "explorer /select,\"" + completepath +"\"";
+            wxExecute(openfile, wxEXEC_ASYNC, NULL);
         }
     }
 }
@@ -856,22 +870,8 @@ void MainWindow::OnClientListBoxFileDClick(wxCommandEvent& event)///////////////
             wxString completepath = clientFiles[i];
             wxString pathtmp = wxPathOnly(clientFiles[i]);
             wxString opendir = "explorer " + pathtmp;
-            wxString openfile = "explorer " + completepath;
-            wxExecute(opendir, wxEXEC_ASYNC, NULL);
-
-            int dialog_return_value = wxID_NO;
-            wxMessageDialog* dial = new wxMessageDialog(NULL,
-                _("Directory opened.\nWould you like to open the file?"),
-                _("Client Files"), wxYES_NO | wxICON_QUESTION);
-            dialog_return_value = dial->ShowModal();
-            switch (dialog_return_value) // Use switch, scales to more buttons later
-            {
-            case wxID_YES:
-                wxExecute(openfile, wxEXEC_ASYNC, NULL);
-            case wxID_NO:
-                break;
-            default:;
-            };
+            wxString openfile = "explorer /select,\"" + completepath + "\"";
+            wxExecute(openfile, wxEXEC_ASYNC, NULL);
         }
     }
 }
@@ -886,22 +886,8 @@ void MainWindow::OnSourceClientListBoxFileDClick(wxCommandEvent& event)/////////
             wxString completepath = allmasterFiles[i];
             wxString pathtmp = wxPathOnly(allmasterFiles[i]);
             wxString opendir = "explorer " + pathtmp;
-            wxString openfile = "explorer " + completepath;
-            wxExecute(opendir, wxEXEC_ASYNC, NULL);
-
-            int dialog_return_value = wxID_NO;
-            wxMessageDialog* dial = new wxMessageDialog(NULL,
-                _("Directory opened.\nWould you like to open the file?"),
-                _("Client files in Source directories"), wxYES_NO | wxICON_QUESTION);
-            dialog_return_value = dial->ShowModal();
-            switch (dialog_return_value) // Use switch, scales to more buttons later
-            {
-            case wxID_YES:
-                wxExecute(openfile, wxEXEC_ASYNC, NULL);
-            case wxID_NO:
-                break;
-            default:;
-            };
+            wxString openfile = "explorer /select,\"" + completepath + "\"";
+            wxExecute(openfile, wxEXEC_ASYNC, NULL);
         }
     }
 }
@@ -916,22 +902,8 @@ void MainWindow::OnTargetMasterListBoxFileDClick(wxCommandEvent& event)/////////
             wxString completepath = allclientFiles[i];
             wxString pathtmp = wxPathOnly(allclientFiles[i]);
             wxString opendir = "explorer " + pathtmp;
-            wxString openfile = "explorer " + completepath;
-            wxExecute(opendir, wxEXEC_ASYNC, NULL);
-
-            int dialog_return_value = wxID_NO;
-            wxMessageDialog* dial = new wxMessageDialog(NULL,
-                _("Directory opened.\nWould you like to open the file?"),
-                _("Master Files in Target directories"), wxYES_NO | wxICON_QUESTION);
-            dialog_return_value = dial->ShowModal();
-            switch (dialog_return_value) // Use switch, scales to more buttons later
-            {
-            case wxID_YES:
-                wxExecute(openfile, wxEXEC_ASYNC, NULL);
-            case wxID_NO:
-                break;
-            default:;
-            };
+            wxString openfile = "explorer /select,\"" + completepath + "\"";
+            wxExecute(openfile, wxEXEC_ASYNC, NULL);
         }
     }
 }
@@ -946,22 +918,8 @@ void MainWindow::OnMFDuplicatesListBoxFileDClick(wxCommandEvent& event)/////////
             wxString completepath = masterFiles[i];
             wxString pathtmp = wxPathOnly(masterFiles[i]);
             wxString opendir = "explorer " + pathtmp;
-            wxString openfile = "explorer " + completepath;
-            wxExecute(opendir, wxEXEC_ASYNC, NULL);
-
-            int dialog_return_value = wxID_NO;
-            wxMessageDialog* dial = new wxMessageDialog(NULL,
-                _("Directory opened.\nWould you like to open the file?"),
-                _("Master Duplicated Files"), wxYES_NO | wxICON_QUESTION);
-            dialog_return_value = dial->ShowModal();
-            switch (dialog_return_value) // Use switch, scales to more buttons later
-            {
-            case wxID_YES:
-                wxExecute(openfile, wxEXEC_ASYNC, NULL);
-            case wxID_NO:
-                break;
-            default:;
-            };
+            wxString openfile = "explorer /select,\"" + completepath + "\"";
+            wxExecute(openfile, wxEXEC_ASYNC, NULL);
         }
     }
 }
@@ -975,21 +933,7 @@ void MainWindow::OnSyncListBoxFileDClick(wxCommandEvent& event)
     wxString pathtmp = wxPathOnly(sf_lb->GetString(sel));
     std::string path = std::string(pathtmp.mb_str());
     wxString opendir = "explorer " + path;
-    wxString openfile = "explorer " + file;
-    wxExecute(opendir, wxEXEC_ASYNC, NULL);
-
-    int dialog_return_value = wxID_NO;
-    wxMessageDialog* dial = new wxMessageDialog(NULL,
-        _("Directory opened.\nWould you like to open the file?"),
-        _("Synced Files"), wxYES_NO | wxICON_QUESTION);
-    dialog_return_value = dial->ShowModal();
-    switch (dialog_return_value) // Use switch, scales to more buttons later
-    {
-    case wxID_YES:
-        wxExecute(openfile, wxEXEC_ASYNC, NULL);
-    case wxID_NO:
-        break;
-    default:;
-    };  
+    wxString openfile = "explorer /select,\"" + file + "\"";
+    wxExecute(openfile, wxEXEC_ASYNC, NULL);
 }
 MainWindow::~MainWindow() {}
