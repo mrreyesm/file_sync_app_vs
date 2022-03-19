@@ -14,6 +14,7 @@
 #include <iostream>
 #include "md5.h"
 #include <algorithm>
+#include <wx/regex.h>
 // ----------------------------------------------------------------------------
 // Global variables
 // ----------------------------------------------------------------------------
@@ -114,16 +115,24 @@ void IdDialog::OnSelectFile(wxCommandEvent& event)
 {
     //Opens a files dialog to select a file
     wxFileDialog* openFileDialog = new wxFileDialog(this, "Choose File for ID");
+    wxRegEx reMaster(".*IDM.*");
+    wxRegEx reClient(".*IDC.*");
     if (openFileDialog->ShowModal() == wxID_OK){
-        //Once you select a file it gets the path and all its components
         fileName = openFileDialog->GetPath();
+        if (reMaster.Matches(fileName) || reClient.Matches(fileName))
+        {
+            wxMessageBox("This file already has an ID.",
+                "Warning!", wxOK | wxICON_WARNING);
+        }
+        else {
+        //Once you select a file it gets the path and all its components
         filetxtCtrl->ChangeValue(fileName);
         std::string s = filetxtCtrl->GetValue().ToStdString();
         size_t lastindex = s.find_last_of(".");
-        size_t idindex = s.find_last_of("_");
-        fileNameTemp = s.substr(0, idindex);
+        fileNameTemp = s.substr(0, lastindex);
         size_t end = s.size();
         extension = s.substr(lastindex, end);
+        }
     }
 }
 //Creates the ID of the file and renames the file
