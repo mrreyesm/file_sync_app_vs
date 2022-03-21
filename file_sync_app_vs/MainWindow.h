@@ -37,6 +37,9 @@ private:
     void OnSync(wxCommandEvent& event);
     void onUpdateSyncButton(wxUpdateUIEvent& event);
     void onUpdateSearchSourceButton(wxUpdateUIEvent& event);
+
+    void onUpdateMasterFilepathlabel(wxCommandEvent& event);
+
     void onUpdateTargetButton(wxUpdateUIEvent& event);
     void OnSourceListBoxDirDClick(wxCommandEvent& event);
     void OnTargetListBoxDirDClick(wxCommandEvent& event);
@@ -74,6 +77,11 @@ private:
     wxStaticText* masterFilesLabel;
     wxListBox* masterFilesListbox;
     wxListBox* mf_lb;
+
+    wxBoxSizer* masterFilepathSizer;
+    wxStaticText* masterFilepathLabel;
+    wxStaticText* masterUpdateFilepathLabel;
+
     wxBoxSizer* masterDFilesSizer;
     wxStaticText* masterDFilesLabel;
     wxListBox* masterDFilesListbox;

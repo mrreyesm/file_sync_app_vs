@@ -15,6 +15,7 @@ namespace window
         ID_S_CLEAR = 53,
         ID_S_SEARCH = 54,      
         ID_MF_LISTBOX = 6,
+        ID_MFP_LABEL = 8,
         ID_MDF_LISTBOX = 7,
         ID_SCF_LISTBOX = 91,
         ID_T_LISTBOX = 60,

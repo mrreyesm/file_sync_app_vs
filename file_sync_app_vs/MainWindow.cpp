@@ -22,6 +22,8 @@ EVT_UPDATE_UI(window::id::ID_S_SEARCH,
     MainWindow::onUpdateSearchSourceButton)
 EVT_UPDATE_UI(window::id::ID_T_SEARCH,
     MainWindow::onUpdateTargetButton)
+EVT_LISTBOX(window::id::ID_MF_LISTBOX,
+    MainWindow::onUpdateMasterFilepathlabel)
 EVT_LISTBOX_DCLICK(window::id::ID_S_LISTBOX,
     MainWindow::OnSourceListBoxDirDClick)
 EVT_LISTBOX_DCLICK(window::id::ID_T_LISTBOX,
@@ -196,6 +198,18 @@ MainWindow::MainWindow(wxWindow* parent,
     masterFilesSizer->Add(masterFilesLabel, 0, wxLEFT, 10);
     masterFilesSizer->Add(masterFilesListbox, 0, wxEXPAND | wxALL, 5);
     leftPanelSizer->Add(masterFilesSizer, 0, wxEXPAND | wxALL, 5);
+
+
+    masterFilepathSizer = new wxBoxSizer(wxHORIZONTAL);
+    masterFilepathLabel = new wxStaticText(leftPanel, wxID_ANY, _("File Path"));
+    masterFilepathLabel->SetMinSize(wxSize(70, masterFilepathLabel->GetMinSize().y));
+    masterFilepathSizer->Add(masterFilepathLabel, 0, wxLEFT, 10);
+
+    masterUpdateFilepathLabel = new wxStaticText(leftPanel, window::id::ID_MFP_LABEL, _("Path"));
+    masterUpdateFilepathLabel->SetMinSize(wxSize(70, masterUpdateFilepathLabel->GetMinSize().y));
+    masterFilepathSizer->Add(masterUpdateFilepathLabel, 0, wxLEFT, 10);
+
+    leftPanelSizer->Add(masterFilepathSizer, 0, wxLEFT, 10);
     // ------------------------------------------------------------------------
     // Master dupplicate files
     // ------------------------------------------------------------------------
@@ -825,6 +839,19 @@ void MainWindow::onUpdateTargetButton(wxUpdateUIEvent& event)
         event.Enable(false);
     }
 }
+//------------------------------------------------------------------------------------------------
+void MainWindow::onUpdateMasterFilepathlabel(wxCommandEvent& event)
+{
+    if (!mf_lb->IsEmpty() && mf_lb->GetSelection() != 0)
+    {
+        int sel = mf_lb->GetSelection();
+        wxString selectedfile = mf_lb->GetString(sel);
+        masterUpdateFilepathLabel->SetLabel(selectedfile);
+    }
+    else {
+    }
+}
+//------------------------------------------------------------------------------------------------
 //this function opens a file explorer with the selected source dir
 void MainWindow::OnSourceListBoxDirDClick(wxCommandEvent& event)
 {
