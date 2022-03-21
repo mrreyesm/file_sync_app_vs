@@ -304,19 +304,15 @@ MainWindow::MainWindow(wxWindow* parent,
     mcFilesbtnsVbox = new wxBoxSizer(wxVERTICAL);
     mc_syncb = new wxButton(rightPanel, window::id::ID_SYNC, wxT("SYNC"));
     idFileb = new wxButton(rightPanel, window::id::ID_IDFILE5, wxT("ID a file"));
-    exitb = new wxButton(rightPanel, window::id::ID_EXITAPP, wxT("EXIT"));
     //Assigns actions to those buttons
     Connect(window::id::ID_SYNC, wxEVT_COMMAND_BUTTON_CLICKED,
         wxCommandEventHandler(MainWindow::OnSync));
     Connect(window::id::ID_IDFILE5, wxEVT_COMMAND_BUTTON_CLICKED,
         wxCommandEventHandler(MainWindow::onIdFile));
-    Bind(wxEVT_COMMAND_BUTTON_CLICKED, [=](wxCommandEvent&) { Close(true); }, window::id::ID_EXITAPP);
     //Add buttons to the right panel
     mcFilesbtnsVbox->Add(-1, 5);
     mcFilesbtnsVbox->Add(mc_syncb);
     mcFilesbtnsVbox->Add(idFileb);
-    mcFilesbtnsVbox->Add(-1, 30);
-    mcFilesbtnsVbox->Add(exitb);
     clientFilesSizer->Add(mcFilesbtnsVbox, 2, wxEXPAND | wxRIGHT, 10);
     rightPanelSizer->Add(-1, 10);
     rightPanelSizer->Add(clientFilesSizer, 0, wxEXPAND | wxALL, 5);
@@ -345,6 +341,16 @@ MainWindow::MainWindow(wxWindow* parent,
     sf_lb = syncedFilesBox = new wxListBox(rightPanel,
         window::id::ID_SF_LISTBOX, wxDefaultPosition, wxSize(450, 100));
     syncedFilesSizer->Add(syncedFilesBox, 0, wxEXPAND | wxALL, 5);
+    //button box
+    sFilesbtnsVbox = new wxBoxSizer(wxVERTICAL);
+    exitb = new wxButton(rightPanel, window::id::ID_EXITAPP, wxT("EXIT"));
+    //Assigns actions to those buttons
+    Bind(wxEVT_COMMAND_BUTTON_CLICKED, [=](wxCommandEvent&) { Close(true); }, window::id::ID_EXITAPP);
+    //Add buttons to the right panel
+    sFilesbtnsVbox->Add(-1, 65);
+    sFilesbtnsVbox->Add(exitb);
+    syncedFilesSizer->Add(sFilesbtnsVbox, 2, wxEXPAND | wxRIGHT, 10);
+    rightPanelSizer->Add(-1, 10);
     rightPanelSizer->Add(syncedFilesSizer, 0, wxEXPAND | wxALL, 5);
 // ------------------------------------------------------------------------
 // Status bar and default size
@@ -742,7 +748,7 @@ void MainWindow::OnSync(wxCommandEvent& event)
                 {
                     time_t mfiletimestamp = wxFileModificationTime(masterFiles[l]);
                     time_t cfiletimestamp = wxFileModificationTime(clientFiles[n]);
-                    if (cfiletimestamp < mfiletimestamp) {
+                    if (cfiletimestamp <= mfiletimestamp) {
                         flag++;
                         syncFiles.Add(clientFiles[n]);
                         if (wxCopyFile(masterFiles[l], clientFiles[n]) != 0)

@@ -100,15 +100,17 @@ private:
     wxBoxSizer* mcFilesbtnsVbox;
     wxButton* mc_syncb;
     wxButton* idFileb;
-    wxButton* exitb;
     wxBoxSizer* targetMFilesSizer;
     wxStaticText* targetMFilesLabel;
     wxListBox* targetMFilesBox;
     wxListBox* tmf_lb;
+    //-------SYNC-----------
     wxBoxSizer* syncedFilesSizer;
     wxStaticText* syncedFilesLabel;
     wxListBox* sf_lb;
     wxListBox* syncedFilesBox;
+    wxBoxSizer* sFilesbtnsVbox;
+    wxButton* exitb;
 
     DECLARE_EVENT_TABLE()
 };
