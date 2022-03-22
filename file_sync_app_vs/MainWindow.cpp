@@ -201,11 +201,11 @@ MainWindow::MainWindow(wxWindow* parent,
 
 
     masterFilepathSizer = new wxBoxSizer(wxHORIZONTAL);
-    masterFilepathLabel = new wxStaticText(leftPanel, wxID_ANY, _("File Path"));
+    masterFilepathLabel = new wxStaticText(leftPanel, wxID_ANY, _("Master\nFilename"));
     masterFilepathLabel->SetMinSize(wxSize(70, masterFilepathLabel->GetMinSize().y));
     masterFilepathSizer->Add(masterFilepathLabel, 0, wxLEFT, 10);
 
-    masterUpdateFilepathLabel = new wxStaticText(leftPanel, window::id::ID_MFP_LABEL, _("Path"));
+    masterUpdateFilepathLabel = new wxStaticText(leftPanel, window::id::ID_MFP_LABEL, _("Filename"));
     masterUpdateFilepathLabel->SetMinSize(wxSize(70, masterUpdateFilepathLabel->GetMinSize().y));
     masterFilepathSizer->Add(masterUpdateFilepathLabel, 0, wxLEFT, 10);
 
@@ -491,14 +491,16 @@ void MainWindow::OnSearchSourceDirs(wxCommandEvent& event)
             {
                 wxString temp;
                 masterFiles.Add(dirList[i]);
-                temp = wxFileNameFromPath(dirList[i]);
+                //temp = wxFileNameFromPath(dirList[i]);
+                temp = dirList[i];
                 filteredDirList.Add(temp);
                 items++;
             }
             if (reClient.Matches(dirList[i]))
             {
                 wxString temp;
-                temp = wxFileNameFromPath(dirList[i]);
+                //temp = wxFileNameFromPath(dirList[i]);
+                temp = dirList[i];
                 clientDirList.Add(temp);
             }
         }
@@ -842,13 +844,11 @@ void MainWindow::onUpdateTargetButton(wxUpdateUIEvent& event)
 //------------------------------------------------------------------------------------------------
 void MainWindow::onUpdateMasterFilepathlabel(wxCommandEvent& event)
 {
-    if (!mf_lb->IsEmpty() && mf_lb->GetSelection() != 0)
+    if (!mf_lb->IsEmpty())
     {
         int sel = mf_lb->GetSelection();
         wxString selectedfile = mf_lb->GetString(sel);
-        masterUpdateFilepathLabel->SetLabel(selectedfile);
-    }
-    else {
+        masterUpdateFilepathLabel->SetLabel(wxFileNameFromPath(selectedfile));
     }
 }
 //------------------------------------------------------------------------------------------------
@@ -889,15 +889,9 @@ void MainWindow::OnMasterListBoxFileDClick(wxCommandEvent& event)
 {
     int sel = mf_lb->GetSelection();
     wxString selectedfile = mf_lb->GetString(sel);
-    for (int i = 0; i < masterFiles.Count(); i++) {
-        if (selectedfile == wxFileNameFromPath(masterFiles[i])) {
-            wxString completepath = masterFiles[i];
-            wxString pathtmp = wxPathOnly(masterFiles[i]);
-            wxString opendir = "explorer " + pathtmp;
-            wxString openfile = "explorer /select,\"" + completepath +"\"";
-            wxExecute(openfile, wxEXEC_ASYNC, NULL);
-        }
-    }
+    wxString openfile = "explorer /select,\"" + selectedfile +"\"";
+    wxExecute(openfile, wxEXEC_ASYNC, NULL);
+
 }
 //this function opens a file explorer with the selected file
 //and it can also open the file if requested
