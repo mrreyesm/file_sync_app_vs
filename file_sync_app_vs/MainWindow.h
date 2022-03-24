@@ -39,6 +39,11 @@ private:
     void onUpdateSearchSourceButton(wxUpdateUIEvent& event);
 
     void onUpdateMasterFilepathlabel(wxCommandEvent& event);
+    void onUpdateSourceCFilepathlabel(wxCommandEvent& event);
+
+    void onUpdateClientFilepathlabel(wxCommandEvent& event);
+    void onUpdateTargetMFilepathlabel(wxCommandEvent& event);
+    void onUpdateSyncFilepathlabel(wxCommandEvent& event);
 
     void onUpdateTargetButton(wxUpdateUIEvent& event);
     void OnSourceListBoxDirDClick(wxCommandEvent& event);
@@ -90,6 +95,10 @@ private:
     wxStaticText* sourceCFilesLabel;
     wxListBox* scf_lb;
     wxListBox* sourceCFilesBox;
+
+    wxBoxSizer* sourceCFilepathSizer;
+    wxStaticText* sourceCFilepathLabel;
+    wxStaticText* sourceCFilepathLabelUpdate;
     //--------TARGET---------
     wxBoxSizer* targetSizer;
     wxStaticText* targetLabel;
@@ -105,6 +114,11 @@ private:
     wxStaticText* clientFilesLabel;
     wxListBox* clientFilesListbox;
     wxListBox* cf_lb;
+
+    wxBoxSizer* clientFilepathSizer;
+    wxStaticText* clientFilepathLabel;
+    wxStaticText* clientFilepathLabelUpdate;
+
     wxBoxSizer* mcFilesbtnsVbox;
     wxButton* mc_syncb;
     wxButton* idFileb;
@@ -112,6 +126,10 @@ private:
     wxStaticText* targetMFilesLabel;
     wxListBox* targetMFilesBox;
     wxListBox* tmf_lb;
+
+    wxBoxSizer* targetMFilepathSizer;
+    wxStaticText* targetMFilepathLabel;
+    wxStaticText* targetMFilepathLabelUpdate;
     //-------SYNC-----------
     wxBoxSizer* syncedFilesSizer;
     wxStaticText* syncedFilesLabel;
@@ -119,6 +137,10 @@ private:
     wxListBox* syncedFilesBox;
     wxBoxSizer* sFilesbtnsVbox;
     wxButton* exitb;
+
+    wxBoxSizer* syncFilepathSizer;
+    wxStaticText* syncFilepathLabel;
+    wxStaticText* syncFilepathLabelUpdate;
 
     DECLARE_EVENT_TABLE()
 };
