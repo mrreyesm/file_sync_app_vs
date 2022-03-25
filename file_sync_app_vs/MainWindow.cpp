@@ -385,6 +385,7 @@ MainWindow::MainWindow(wxWindow* parent,
     targetMFilepathSizer->Add(targetMFilepathLabelUpdate, 0, wxLEFT, 10);
 
     rightPanelSizer->Add(targetMFilepathSizer, 0, wxLEFT, 10);
+
     // ------------------------------------------------------------------------
     // Synced files
     // ------------------------------------------------------------------------
