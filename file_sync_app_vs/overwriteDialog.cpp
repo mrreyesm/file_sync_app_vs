@@ -26,69 +26,51 @@ OverwriteDialog::OverwriteDialog(wxWindow* parent, wxWindowID id,
     mainSizer = new wxBoxSizer(wxVERTICAL);
     overwriteSizer = new wxBoxSizer(wxHORIZONTAL);
     //Creates a label
-    wxStaticText* questionLable = new wxStaticText(this, wxID_ANY, _("Nothing"));
-    questionLable->SetMinSize(wxSize(50, questionLable->GetMinSize().y));
+    wxStaticText* questionLable = new wxStaticText(this, wxID_ANY, _(name + "\nHas been modified more recently than the master file.\nWould you like to overwrite it?"));
+    questionLable->SetMinSize(wxSize(questionLable->GetMinSize().x, 50));
     overwriteSizer->Add(questionLable, 0, wxALL, 5);
+    mainSizer->Add(overwriteSizer, 0, wxEXPAND | wxALL, 5);
     // ------------------------------------------------------------------------
-    // 
+    // Create buttons
     // ------------------------------------------------------------------------
+    overwriteBtnsSizer = new wxBoxSizer(wxHORIZONTAL);
     //Button to select file that will be ID
-    overwriteSizer = new wxButton(this, window::id::ID_IDADD, wxT("Jump to file..."));
-    Connect(window::id::ID_IDADD, wxEVT_COMMAND_BUTTON_CLICKED,
+    gotoBtn = new wxButton(this, window::id::ID_GOTO, wxT("Jump to file..."));
+    Connect(window::id::ID_GOTO, wxEVT_COMMAND_BUTTON_CLICKED,
         wxCommandEventHandler(OverwriteDialog::OnSelectFile));
-    overwriteSizer->Add(addFileBtn, 0, wxTOP, 5);
-    // ------------------------------------------------------------------------
-    // Master/Client checkboxes
-    // ------------------------------------------------------------------------
-    //Create checkboxes to select if the file is Master or CLient
-    //Creats a vertical box panel to put the checkboxes
-    vbox = new wxBoxSizer(wxVERTICAL);
-    masterCheckBox = new wxCheckBox(this, window::id::ID_MASTERCHBOX,
-        wxT("Master"), wxPoint(5, 20));
-    clientCheckBox = new wxCheckBox(this, window::id::ID_CLIENTCHBOX,
-        wxT("Client"), wxPoint(5, 20));
-    masterCheckBox->SetValue(true);
-    clientCheckBox->SetValue(false);
-    //assigns actions to those buttons
-    Connect(window::id::ID_MASTERCHBOX, wxEVT_COMMAND_CHECKBOX_CLICKED,
-        wxCommandEventHandler(OverwriteDialog::OnToggle));
-    Connect(window::id::ID_CLIENTCHBOX, wxEVT_COMMAND_CHECKBOX_CLICKED,
-        wxCommandEventHandler(OverwriteDialog::OnToggle));
-    // adds each button to the panel
-    vbox->Add(-1, 5);
-    vbox->Add(masterCheckBox);
-    vbox->Add(clientCheckBox, 0, wxTOP, 5);
-    // adds the button panel to the source sizer
-    idFileSizer->Add(vbox);
-    // ------------------------------------------------------------------------
-    // Create ID button
-    // ------------------------------------------------------------------------
-    // Add button to create ID
-    createIDbtn = new wxButton(this, window::id::ID_IDFILE, _("Create ID"));
-    Connect(window::id::ID_IDFILE, wxEVT_COMMAND_BUTTON_CLICKED,
-        wxCommandEventHandler(IdDialog::OnIdFile));
-    idFileSizer->Add(createIDbtn, 0, wxALL, 5);
-    mainSizer->Add(idFileSizer, 0, wxEXPAND | wxALL, 5);
+    overwriteBtnsSizer->Add(gotoBtn, 0, wxTOP, 5);
+    //
+    yesBtn = new wxButton(this, window::id::ID_YESBTN, _("Yes"));
+    Connect(window::id::ID_YESBTN, wxEVT_COMMAND_BUTTON_CLICKED,
+        wxCommandEventHandler(OverwriteDialog::OnYes));
+    overwriteBtnsSizer->Add(yesBtn, 0, wxALL, 5);
+    //
+    noBtn = new wxButton(this, window::id::ID_NOBTN, _("No"));
+    Connect(window::id::ID_NOBTN, wxEVT_COMMAND_BUTTON_CLICKED,
+        wxCommandEventHandler(OverwriteDialog::OnNo));
+    overwriteBtnsSizer->Add(noBtn, 0, wxALL, 5);
+    mainSizer->Add(overwriteBtnsSizer, 0, wxEXPAND | wxALL, 5);
+    
     SetSizer(mainSizer);
     // ------------------------------------------------------------------------
     // Default size
     // ------------------------------------------------------------------------
-    SetMinSize(wxSize(1020, 100)); //min size of the dialog
+    SetMinSize(wxSize(300, 120)); //min size of the dialog
     Fit();
 }
 //
-void IdDialog::OnSelectFile(wxCommandEvent& event)
+void OverwriteDialog::OnSelectFile(wxCommandEvent& event)
 {
  
 }
 //
-void IdDialog::OnIdFile(wxCommandEvent& event)
+void OverwriteDialog::OnYes(wxCommandEvent& event)
 {
 
 }
-//Small function to select if the files is master or client
-void IdDialog::OnToggle(wxCommandEvent& WXUNUSED(event))
+//
+void OverwriteDialog::OnNo(wxCommandEvent& event)
 {
-
+    Close();
 }
-IdDialog::~IdDialog() {}
+OverwriteDialog::~OverwriteDialog() {}

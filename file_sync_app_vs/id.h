@@ -33,6 +33,10 @@ namespace window
         ID_MASTERCHBOX = 22,
         ID_CLIENTCHBOX = 23,
         ID_EXITAPP = 49,
-        ID_IDFILE5 = 95
+        ID_IDFILE5 = 95,
+
+        ID_GOTO = 31,
+        ID_YESBTN = 32,
+        ID_NOBTN = 33
     };
 }

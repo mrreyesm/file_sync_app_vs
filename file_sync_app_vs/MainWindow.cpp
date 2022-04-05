@@ -8,6 +8,7 @@
 // ----------------------------------------------------------------------------
 #include "MainWindow.h"
 #include "IdDialog.h"
+#include "overwriteDialog.h"
 #include "id.h"
 #include <wx/artprov.h>
 #include <wx/listbox.h>
@@ -828,6 +829,10 @@ void MainWindow::OnSync(wxCommandEvent& event)
                         PushStatusText(_("Syncing!"));
                     }
                     else {
+                        wxString name = clientFiles[n];
+                        OverwriteDialog* overwriteDialog = new OverwriteDialog(this, wxID_ANY, _("WARNING!"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE, name);
+                        overwriteDialog->Show();
+                        /*
                         int dialog_return_value = wxID_NO;
                         wxMessageDialog* dial = new wxMessageDialog(NULL,
                             _("The file\n" + clientFiles[n] + "\nHas been modified more recently than the master file.\nWould you like to overwrite it?"),
@@ -843,8 +848,9 @@ void MainWindow::OnSync(wxCommandEvent& event)
                             PushStatusText(_("Syncing!"));
                         case wxID_NO:
                             break;
-                        default:;
+                        default:;                 
                         };
+                        */
                     }
                 }
             }

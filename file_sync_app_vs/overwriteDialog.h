@@ -23,12 +23,15 @@ public:
     virtual ~OverwriteDialog();
 private:
     //Event handlers/Functions
-    void OnIdFile(wxCommandEvent& event);
+    void OnSelectFile(wxCommandEvent& event);
+    void OnYes(wxCommandEvent& event);
+    void OnNo(wxCommandEvent& event);
     //Declaration of objects
     wxBoxSizer* mainSizer;
     wxBoxSizer* overwriteSizer;
     wxStaticText* questionLable;
-    wxButton* gotobtn;
+    wxBoxSizer* overwriteBtnsSizer;
+    wxButton* gotoBtn;
     wxButton* yesBtn;
-    wxButton* nobtn;
+    wxButton* noBtn;
 };
