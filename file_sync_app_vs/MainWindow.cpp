@@ -17,6 +17,7 @@
 
 wxString clientFile;
 wxString masterFile;
+int SYNCflag = 0;
  
 //Event table for static events
 BEGIN_EVENT_TABLE(MainWindow, wxFrame)
@@ -838,7 +839,7 @@ void MainWindow::OnSync(wxCommandEvent& event)
         syncFiles.clear();
         sf_lb->Clear();
         //this flag/counter makes sure that there are files to be updated
-        int flag = 0;
+        SYNCflag = 0;
         //Iterates through all master files and compares them to the client files
         for (int l = 0; l < masterFiles.GetCount(); l++)
         {
@@ -873,47 +874,25 @@ void MainWindow::OnSync(wxCommandEvent& event)
                     time_t mfiletimestamp = wxFileModificationTime(masterFiles[l]);
                     time_t cfiletimestamp = wxFileModificationTime(clientFiles[n]);
                     if (cfiletimestamp <= mfiletimestamp) {
-                        flag++;
+                        SYNCflag++;
                         syncFiles.Add(clientFiles[n]);
                         if (wxCopyFile(masterFiles[l], clientFiles[n]) != 0)
                             perror("Error moving file");
                         PushStatusText(_("Syncing!"));
                     }
-                    else if (cfiletimestamp > mfiletimestamp) {
+                    else {
                         clientFile = clientFiles[n];
                         masterFile = masterFiles[l];
                         OverwriteDialog* overwriteDialog = new OverwriteDialog(this,
-                            wxID_ANY, masterFile, wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxICON_WARNING, clientFile);
-                        //overwriteDialog.name = clientFile;
+                            wxID_ANY, _("WARNING!"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxICON_WARNING);
                         overwriteDialog->Show();
-                        if (overwriteDialog->ShowModal() == 31 || overwriteDialog->ShowModal() == 32 || overwriteDialog->ShowModal() == 33) {
-                            break;
-                         /*
-                        int dialog_return_value = wxID_NO;
-                        wxMessageDialog* dial = new wxMessageDialog(NULL,
-                            _("The file\n" + clientFiles[n] + "\nHas been modified more recently than the master file.\nWould you like to overwrite it?"),
-                            _("Sync Files"), wxYES_NO | wxICON_WARNING);
-                        dialog_return_value = dial->ShowModal();
-                        switch (dialog_return_value) // Use switch, scales to more buttons later
-                        {
-                        case wxID_YES:
-                            flag++;
-                            syncFiles.Add(clientFiles[n]);
-                            if (wxCopyFile(masterFiles[l], clientFiles[n]) != 0)
-                                perror("Error moving file");
-                            PushStatusText(_("Syncing!"));
-                        case wxID_NO:
-                            break;
-                        default:;
-                        };
-                        */
-                        }
+                        overwriteDialog->Destroy();
                     }
                 }
             }
         }
         //if there are no files to be updated it raises a dialog window
-        if (!flag)
+        if (!SYNCflag)
         {
             wxMessageBox("There are no files to be updated.",
                 "Notification", wxOK | wxICON_INFORMATION);
@@ -1153,6 +1132,10 @@ void OverwriteDialog::OnSelectFile(wxCommandEvent& event)
 //
 void OverwriteDialog::OnYes(wxCommandEvent& event)
 {
+    SYNCflag++;
+    syncFiles.Add(clientFile);
+    if (wxCopyFile(masterFile, clientFile) != 0)
+        perror("Error moving file");
     Close();
 }
 //
