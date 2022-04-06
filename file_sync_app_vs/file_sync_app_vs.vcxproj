@@ -146,14 +146,12 @@
     <ClInclude Include="IdDialog.h" />
     <ClInclude Include="MainWindow.h" />
     <ClInclude Include="md5.h" />
-    <ClInclude Include="overwriteDialog.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp" />
     <ClCompile Include="IdDialog.cpp" />
     <ClCompile Include="MainWindow.cpp" />
     <ClCompile Include="md5.cpp" />
-    <ClCompile Include="overwriteDialog.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />

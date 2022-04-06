@@ -8,7 +8,6 @@
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
 #endif
-
 class MainWindow : public wxFrame
 {
 public:
@@ -143,4 +142,31 @@ private:
     wxStaticText* syncFilepathLabelUpdate;
 
     DECLARE_EVENT_TABLE()
+};
+
+class OverwriteDialog : public wxDialog
+{
+public:
+    //constructor
+    OverwriteDialog(wxWindow* parent, wxWindowID id,
+        const wxString& title,
+        const wxPoint& pos = wxDefaultPosition,
+        const wxSize& size = wxDefaultSize,
+        long style = wxDEFAULT_DIALOG_STYLE,
+        const wxString& name = wxASCII_STR(wxDialogNameStr));
+    //destructor
+    virtual ~OverwriteDialog();
+private:
+    //Event handlers/Functions
+    void OnSelectFile(wxCommandEvent& event);
+    void OnYes(wxCommandEvent& event);
+    void OnNo(wxCommandEvent& event);
+    //Declaration of objects
+    wxBoxSizer* mainSizer;
+    wxBoxSizer* overwriteSizer;
+    wxStaticText* questionLable;
+    wxBoxSizer* overwriteBtnsSizer;
+    wxButton* gotoBtn;
+    wxButton* yesBtn;
+    wxButton* noBtn;
 };

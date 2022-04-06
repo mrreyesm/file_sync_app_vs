@@ -8,13 +8,16 @@
 // ----------------------------------------------------------------------------
 #include "MainWindow.h"
 #include "IdDialog.h"
-#include "overwriteDialog.h"
 #include "id.h"
 #include <wx/artprov.h>
 #include <wx/listbox.h>
 #include <wx/dir.h>
 #include <wx/regex.h>
 #include <wx/textfile.h>
+
+wxString clientFile;
+wxString masterFile;
+ 
 //Event table for static events
 BEGIN_EVENT_TABLE(MainWindow, wxFrame)
 EVT_UPDATE_UI(window::id::ID_SYNC,
@@ -428,6 +431,54 @@ MainWindow::MainWindow(wxWindow* parent,
     SetStatusText(_(""));
     SetMinSize(wxSize(1300, 720));
 }
+//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+OverwriteDialog::OverwriteDialog(wxWindow* parent, wxWindowID id,
+    const wxString& title,
+    const wxPoint& pos,
+    const wxSize& size,
+    long style,
+    const wxString& name) :
+    wxDialog(parent, id, title, pos, size, style, name) {
+    //Create main sizer with a horizontal sizer to store the components
+    mainSizer = new wxBoxSizer(wxVERTICAL);
+    overwriteSizer = new wxBoxSizer(wxHORIZONTAL);
+    //Creates a label
+    wxStaticText* questionLable = new wxStaticText(this, wxID_ANY, _("WARNING!!\n" + clientFile + "\nHas been modified more recently than the master file.\nWould you like to overwrite it?"));
+    questionLable->SetMinSize(wxSize(questionLable->GetMinSize().x, 70));
+    overwriteSizer->Add(questionLable, 0, wxALL, 5);
+    mainSizer->Add(overwriteSizer, 0, wxEXPAND | wxALL, 5);
+    // ------------------------------------------------------------------------
+    // Create buttons
+    // ------------------------------------------------------------------------
+    overwriteBtnsSizer = new wxBoxSizer(wxHORIZONTAL);
+    //Button to select file that will be ID
+    gotoBtn = new wxButton(this, window::id::ID_GOTO, wxT("Jump to file..."));
+    Connect(window::id::ID_GOTO, wxEVT_COMMAND_BUTTON_CLICKED,
+        wxCommandEventHandler(OverwriteDialog::OnSelectFile));
+    overwriteBtnsSizer->Add(gotoBtn, 0, wxTOP, 5);
+    //
+    yesBtn = new wxButton(this, window::id::ID_YESBTN, _("Yes"));
+    Connect(window::id::ID_YESBTN, wxEVT_COMMAND_BUTTON_CLICKED,
+        wxCommandEventHandler(OverwriteDialog::OnYes));
+    overwriteBtnsSizer->Add(yesBtn, 0, wxALL, 5);
+    //
+    noBtn = new wxButton(this, window::id::ID_NOBTN, _("No"));
+    Connect(window::id::ID_NOBTN, wxEVT_COMMAND_BUTTON_CLICKED,
+        wxCommandEventHandler(OverwriteDialog::OnNo));
+    overwriteBtnsSizer->Add(noBtn, 0, wxALL, 5);
+    mainSizer->Add(overwriteBtnsSizer, 0, wxEXPAND | wxALL, 5);
+
+    SetSizer(mainSizer);
+    // ------------------------------------------------------------------------
+    // Default size
+    // ------------------------------------------------------------------------
+    SetMinSize(wxSize(400, 140)); //min size of the dialog
+    Fit();
+    ShowModal();
+}
+//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+
 /*This function creates an instance of the dialog window
 when the "ID File" button is pressed*/
 void MainWindow::onIdFile(wxCommandEvent& WXUNUSED(event))
@@ -828,11 +879,16 @@ void MainWindow::OnSync(wxCommandEvent& event)
                             perror("Error moving file");
                         PushStatusText(_("Syncing!"));
                     }
-                    else {
-                        wxString name = clientFiles[n];
-                        OverwriteDialog* overwriteDialog = new OverwriteDialog(this, wxID_ANY, _("WARNING!"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE, name);
+                    else if (cfiletimestamp > mfiletimestamp) {
+                        clientFile = clientFiles[n];
+                        masterFile = masterFiles[l];
+                        OverwriteDialog* overwriteDialog = new OverwriteDialog(this,
+                            wxID_ANY, masterFile, wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxICON_WARNING, clientFile);
+                        //overwriteDialog.name = clientFile;
                         overwriteDialog->Show();
-                        /*
+                        if (overwriteDialog->ShowModal() == 31 || overwriteDialog->ShowModal() == 32 || overwriteDialog->ShowModal() == 33) {
+                            break;
+                         /*
                         int dialog_return_value = wxID_NO;
                         wxMessageDialog* dial = new wxMessageDialog(NULL,
                             _("The file\n" + clientFiles[n] + "\nHas been modified more recently than the master file.\nWould you like to overwrite it?"),
@@ -848,9 +904,10 @@ void MainWindow::OnSync(wxCommandEvent& event)
                             PushStatusText(_("Syncing!"));
                         case wxID_NO:
                             break;
-                        default:;                 
+                        default:;
                         };
                         */
+                        }
                     }
                 }
             }
@@ -1086,3 +1143,21 @@ void MainWindow::OnSyncListBoxFileDClick(wxCommandEvent& event)
     wxExecute(openfile, wxEXEC_ASYNC, NULL);
 }
 MainWindow::~MainWindow() {}
+
+
+void OverwriteDialog::OnSelectFile(wxCommandEvent& event)
+{
+    wxString openfile = "explorer /select,\"" + clientFile;
+    wxExecute(openfile, wxEXEC_ASYNC, NULL);
+}
+//
+void OverwriteDialog::OnYes(wxCommandEvent& event)
+{
+    Close();
+}
+//
+void OverwriteDialog::OnNo(wxCommandEvent& event)
+{
+    Close();
+}
+OverwriteDialog::~OverwriteDialog() {}
