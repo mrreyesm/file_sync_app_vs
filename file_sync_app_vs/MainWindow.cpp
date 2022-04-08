@@ -502,17 +502,44 @@ void MainWindow::OnAddSourceDir(wxCommandEvent& event)
     if (openDirDialog->ShowModal() == wxID_OK) {
         int flag = 0;
         wxString DirName = openDirDialog->GetPath();
+        std::string dna = std::string(DirName.mb_str());
+        int dnaEnd = dna.size();
+        int dnafilelastindex = dna.find_last_of("\\");
+        std::string dnaParent = dna.substr(0, dnafilelastindex);
+
         for (int i = 0; i < num_of_sdirs; i++) {
             wxString tempDirName = sdir_lbx->GetString(i);
+            std::string tdna = std::string(tempDirName.mb_str());
+            int tdnaEnd = tdna.size();
+            int tdnafilelastindex = tdna.find_last_of("\\");
+            std::string tdnaParent = tdna.substr(0, tdnafilelastindex);
+
+            //checks if dir name is not already in the list
             if (tempDirName == DirName) {
                 wxMessageBox("This Directory is already in the list.",
                     "Warning", wxOK | wxICON_WARNING);
                 flag = 1;
+            }          
+            //checks if the dir name is not a parent of an already existing dir
+            if (tdnaParent == DirName) {
+                flag = 2;
+            }
+            //checks if the dir name is a subdirectory of an already existing dir
+            if (tempDirName == dnaParent) {
+                flag = 3;
             }
         }
         if (flag == 0) {
             sdir_lbx->Append(DirName);
             num_of_sdirs++;
+        }
+        if (flag == 2) {
+            wxMessageBox("This is a Parent directory from an already existing directory.\n Adding it would result in duplicate filepaths.",
+                "Warning", wxOK | wxICON_WARNING);
+        }
+        if (flag == 3) {
+            wxMessageBox("This is a subdirectory from an already existing directory.\n Adding it would result in duplicate filepaths",
+                "Warning", wxOK | wxICON_WARNING);
         }
     }
 }
@@ -687,20 +714,48 @@ void MainWindow::OnAddTargetDir(wxCommandEvent& event)
     if (openDirDialog->ShowModal() == wxID_OK) {
         int flag = 0;
         wxString DirName = openDirDialog->GetPath();
-        for (int i = 0; i < num_of_tdirs; i++) {           
+        std::string dna = std::string(DirName.mb_str());
+        int dnaEnd = dna.size();
+        int dnafilelastindex = dna.find_last_of("\\");
+        std::string dnaParent = dna.substr(0, dnafilelastindex);
+
+        for (int i = 0; i < num_of_tdirs; i++) {
             wxString tempDirName = tdir_lbx->GetString(i);
+            std::string tdna = std::string(tempDirName.mb_str());
+            int tdnaEnd = tdna.size();
+            int tdnafilelastindex = tdna.find_last_of("\\");
+            std::string tdnaParent = tdna.substr(0, tdnafilelastindex);
+
+            //checks if dir name is not already in the list
             if (tempDirName == DirName) {
                 wxMessageBox("This Directory is already in the list.",
                     "Warning", wxOK | wxICON_WARNING);
                 flag = 1;
+            }
+            //checks if the dir name is not a parent of an already existing dir
+            if (tdnaParent == DirName) {
+                flag = 2;
+            }
+            //checks if the dir name is a subdirectory of an already existing dir
+            if (tempDirName == dnaParent) {
+                flag = 3;
             }
         }
         if (flag == 0) {
             tdir_lbx->Append(DirName);
             num_of_tdirs++;
         }
+        if (flag == 2) {
+            wxMessageBox("This is a Parent directory from an already existing directory.\n Adding it would result in duplicate filepaths.",
+                "Warning", wxOK | wxICON_WARNING);
+        }
+        if (flag == 3) {
+            wxMessageBox("This is a subdirectory from an already existing directory.\n Adding it would result in duplicate filepaths",
+                "Warning", wxOK | wxICON_WARNING);
+        }
     }
 }
+
 //Clears all listboxes in the right panel
 void MainWindow::OnClearTargetDirs(wxCommandEvent& event)
 {
