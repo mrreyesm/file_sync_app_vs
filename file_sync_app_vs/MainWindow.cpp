@@ -432,7 +432,7 @@ MainWindow::MainWindow(wxWindow* parent,
     SetStatusText(_(""));
     SetMinSize(wxSize(1300, 720));
 }
-//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
 OverwriteDialog::OverwriteDialog(wxWindow* parent, wxWindowID id,
     const wxString& title,
     const wxPoint& pos,
@@ -477,8 +477,6 @@ OverwriteDialog::OverwriteDialog(wxWindow* parent, wxWindowID id,
     Fit();
     ShowModal();
 }
-//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-
 
 /*This function creates an instance of the dialog window
 when the "ID File" button is pressed*/
