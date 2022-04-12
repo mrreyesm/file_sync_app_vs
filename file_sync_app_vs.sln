@@ -5,6 +5,8 @@ VisualStudioVersion = 17.0.32112.339
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "file_sync_app_vs", "file_sync_app_vs\file_sync_app_vs.vcxproj", "{04A729D9-DC52-478A-A0F4-EC9F295F2C0D}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "File Sync App", "File Sync App\File Sync App.vdproj", "{9C941E60-9302-4C23-8354-3E8D4A00958C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +23,11 @@ Global
 		{04A729D9-DC52-478A-A0F4-EC9F295F2C0D}.Release|x64.Build.0 = Release|x64
 		{04A729D9-DC52-478A-A0F4-EC9F295F2C0D}.Release|x86.ActiveCfg = Release|Win32
 		{04A729D9-DC52-478A-A0F4-EC9F295F2C0D}.Release|x86.Build.0 = Release|Win32
+		{9C941E60-9302-4C23-8354-3E8D4A00958C}.Debug|x64.ActiveCfg = Debug
+		{9C941E60-9302-4C23-8354-3E8D4A00958C}.Debug|x64.Build.0 = Debug
+		{9C941E60-9302-4C23-8354-3E8D4A00958C}.Debug|x86.ActiveCfg = Debug
+		{9C941E60-9302-4C23-8354-3E8D4A00958C}.Release|x64.ActiveCfg = Release
+		{9C941E60-9302-4C23-8354-3E8D4A00958C}.Release|x86.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
