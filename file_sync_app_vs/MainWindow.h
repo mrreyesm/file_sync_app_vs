@@ -38,6 +38,7 @@ private:
     void onUpdateSearchSourceButton(wxUpdateUIEvent& event);
 
     void onUpdateMasterFilepathlabel(wxCommandEvent& event);
+    void onUpdateDMasterFilepathlabel(wxCommandEvent& event);
     void onUpdateSourceCFilepathlabel(wxCommandEvent& event);
 
     void onUpdateClientFilepathlabel(wxCommandEvent& event);
@@ -90,6 +91,11 @@ private:
     wxStaticText* masterDFilesLabel;
     wxListBox* masterDFilesListbox;
     wxListBox* mdf_lb;
+
+    wxBoxSizer* masterDFilepathSizer;
+    wxStaticText* masterDFilepathLabel;
+    wxStaticText* masterUpdateDFilepathLabel;
+
     wxBoxSizer* sourceCFilesSizer;
     wxStaticText* sourceCFilesLabel;
     wxListBox* scf_lb;

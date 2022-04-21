@@ -30,6 +30,8 @@ EVT_UPDATE_UI(window::id::ID_T_SEARCH,
 
 EVT_LISTBOX(window::id::ID_MF_LISTBOX,
     MainWindow::onUpdateMasterFilepathlabel)
+EVT_LISTBOX(window::id::ID_MDF_LISTBOX,
+    MainWindow::onUpdateDMasterFilepathlabel)
 EVT_LISTBOX(window::id::ID_SCF_LISTBOX,
     MainWindow::onUpdateSourceCFilepathlabel)
 EVT_LISTBOX(window::id::ID_CF_LISTBOX,
@@ -240,6 +242,17 @@ MainWindow::MainWindow(wxWindow* parent,
         window::id::ID_MDF_LISTBOX, wxDefaultPosition, wxSize(450, 100));
     masterDFilesSizer->Add(masterDFilesListbox, 0, wxEXPAND | wxALL, 5);
     leftPanelSizer->Add(masterDFilesSizer, 0, wxEXPAND | wxALL, 5);
+
+    masterDFilepathSizer = new wxBoxSizer(wxHORIZONTAL);
+    masterDFilepathLabel = new wxStaticText(leftPanel, wxID_ANY, _("Duplicate\nFile ID"));
+    masterDFilepathLabel->SetMinSize(wxSize(70, masterDFilepathLabel->GetMinSize().y));
+    masterDFilepathSizer->Add(masterDFilepathLabel, 0, wxLEFT, 10);
+
+    masterUpdateDFilepathLabel = new wxStaticText(leftPanel, wxID_ANY, _("Duplicate File ID"));
+    masterUpdateDFilepathLabel->SetMinSize(wxSize(70, masterUpdateDFilepathLabel->GetMinSize().y));
+    masterDFilepathSizer->Add(masterUpdateDFilepathLabel, 0, wxLEFT, 10);
+
+    leftPanelSizer->Add(masterDFilepathSizer, 0, wxLEFT, 10);
     // ------------------------------------------------------------------------
     // Source client files
     // ------------------------------------------------------------------------
@@ -1008,7 +1021,18 @@ void MainWindow::onUpdateMasterFilepathlabel(wxCommandEvent& event)
         masterUpdateFilepathLabel->SetLabel(wxFileNameFromPath(selectedfile));
     }
 }
-
+void MainWindow::onUpdateDMasterFilepathlabel(wxCommandEvent& event)
+{
+    if (!mdf_lb->IsEmpty())
+    {
+        int sel = mdf_lb->GetSelection();
+        wxString selectedfile = mdf_lb->GetString(sel);
+        std::string m = selectedfile.ToStdString();
+        int masteridhashindex = m.find_last_of("_ID");
+        std::string masterNameTemp = m.substr(masteridhashindex-2, 12);
+        masterUpdateDFilepathLabel->SetLabel(wxFileNameFromPath(masterNameTemp));
+    }
+}
 void MainWindow::onUpdateSourceCFilepathlabel(wxCommandEvent& event)
 {
     if (!scf_lb->IsEmpty())
@@ -1151,16 +1175,16 @@ void MainWindow::OnMFDuplicatesListBoxFileDClick(wxCommandEvent& event)/////////
         m = mastertemp.ToStdString();
         mend = m.size();
         masterlastindex = m.find_last_of(".");
-        masteridhashindex = m.find_last_of("-");
-        masterNameTemp = m.substr(masteridhashindex, masterlastindex);
+        masteridhashindex = m.find_last_of("_ID");
+        masterNameTemp = m.substr(masteridhashindex-2, 12);
         masterExtension = m.substr(masterlastindex, mend);
 
         clienttemp = selectedfile;
         c = clienttemp.ToStdString();
         cend = c.size();
         clientlastindex = c.find_last_of(".");
-        clientidhashindex = c.find_last_of("-");
-        clientNameTemp = c.substr(clientidhashindex, clientlastindex);
+        clientidhashindex = c.find_last_of("_ID");
+        clientNameTemp = c.substr(clientidhashindex-2, 12);
         clientExtension = c.substr(clientlastindex, cend);
 
         if (masterNameTemp == clientNameTemp) {
