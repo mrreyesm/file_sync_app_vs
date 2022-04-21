@@ -1073,7 +1073,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:File Sync App"
         "ProductCode" = "8:{D5B19E78-E6A8-475F-9701-1070F50DB284}"
-        "PackageCode" = "8:{EA81842C-9833-4D17-B33C-E52116EBF5F3}"
+        "PackageCode" = "8:{451874A7-AFC1-450A-BCBB-7AC91ADCF391}"
         "UpgradeCode" = "8:{DDAF55CD-71BA-489D-AE71-F6E2E318C35A}"
         "AspNetVersion" = "8:2.0.50727.0"
         "RestartWWWService" = "11:FALSE"

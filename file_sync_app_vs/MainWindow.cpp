@@ -154,6 +154,9 @@ MainWindow::MainWindow(wxWindow* parent,
         window::id::ID_S_LISTBOX,wxDefaultPosition, wxSize(450, 110)); //wxLB_OWNERDRAW
     //Fill listbox with source directories from a text file
     wxTextFile stxtFile(_T("sourcedirs.txt"));
+    if (!wxFileExists("sourcedirs.txt")) {
+        stxtFile.Create("sourcedirs.txt");
+    }
     stxtFile.Open();
     std::string sdirNameStr;
     for (sdirNameStr = stxtFile.GetFirstLine(); !stxtFile.Eof();
@@ -277,6 +280,9 @@ MainWindow::MainWindow(wxWindow* parent,
         window::id::ID_T_LISTBOX, wxDefaultPosition, wxSize(450, 110));
     //Fill listbox with target directories from a text file
     wxTextFile ttxtFile(_T("targetdirs.txt"));
+    if (!wxFileExists("targetdirs.txt")) {
+        stxtFile.Create("targetdirs.txt");
+    }
     ttxtFile.Open();
     std::string tdirNameStr;
     for (tdirNameStr = ttxtFile.GetFirstLine(); !ttxtFile.Eof();
